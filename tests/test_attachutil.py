@@ -38,6 +38,7 @@ __version__ = '$Revision$'
 
 
 class ImghdrMock:
+
     def __init__(self, type):
         self.type = type
         self.path = None
@@ -48,6 +49,7 @@ class ImghdrMock:
 
 
 class AttachUtilTest(unittest.TestCase):
+
     def tearDown(self):
         attachutil._imghdr = imghdr
 
@@ -60,7 +62,7 @@ class AttachUtilTest(unittest.TestCase):
         attachutil._imghdr = ImghdrMock('png')
         self.assertFalse(attachutil.is_valid_image('text/html', 'foo'))
         self.assertEquals('foo', attachutil._imghdr.path)
- 
+
     def test_is_valid_image_file_isnot_image(self):
         attachutil._imghdr = ImghdrMock(None)
         self.assertFalse(attachutil.is_valid_image('image/png', 'foo'))

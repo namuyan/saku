@@ -41,39 +41,33 @@ from shingetsu.title import *
 archive_dir = shingetsu.config.archive_dir
 archive_uri = shingetsu.config.archive_uri
 
+
 def localtime(stamp=0):
     """Return YYYY-mm-dd HH:MM."""
     return time.strftime('%Y-%m-%d %H:%M', time.localtime(int(stamp)))
 
+
 def escape(msg):
     msg = msg.replace("&", "&amp;")
-    msg = re.sub(r"&amp;(#\d+|#[Xx][0-9A-Fa-f]+|[A-Za-z0-9]+);",
-                 r"&\1;",
-                 msg)
+    msg = re.sub(r"&amp;(#\d+|#[Xx][0-9A-Fa-f]+|[A-Za-z0-9]+);", r"&\1;", msg)
     msg = msg.replace("<", "&lt;")
     msg = msg.replace(">", "&gt;")
     msg = msg.replace("\r", "")
     msg = msg.replace("\n", "<br>")
     return msg
 
+
 def res_anchor(id):
     return ('<a href="%s.html" class="innerlink">') % id
+
 
 def html_format(plain):
     buf = plain.replace("<br>", "\n")
     buf = escape(buf)
-    buf = re.sub(r"<br>",
-                 "<br />\n    ",
-                 buf)
-    buf = re.sub(r"(&gt;&gt;)([0-9a-f]{8})",
-                 res_anchor(r"\2") + r"\g<0></a>",
-                 buf)
-    buf = re.sub(r"https?://[^\x00-\x20\"'()<>\[\]\x7F-\xFF]{2,}",
-                 r'<a href="\g<0>">\g<0></a>',
-                 buf)
-    buf = re.sub(r"\[\[<a.*?>(.*?)\]\]</a>",
-                 r"[[\1]]",
-                 buf)
+    buf = re.sub(r"<br>", "<br />\n    ", buf)
+    buf = re.sub(r"(&gt;&gt;)([0-9a-f]{8})", res_anchor(r"\2") + r"\g<0></a>", buf)
+    buf = re.sub(r"https?://[^\x00-\x20\"'()<>\[\]\x7F-\xFF]{2,}", r'<a href="\g<0>">\g<0></a>', buf)
+    buf = re.sub(r"\[\[<a.*?>(.*?)\]\]</a>", r"[[\1]]", buf)
 
     tmp = ""
     while buf:
@@ -86,6 +80,7 @@ def html_format(plain):
             tmp += buf
             buf = ""
     return tmp
+
 
 def bracket_link(link):
     m = re.search(r"^/(thread)/([^/]+)/([0-9a-f]{8})$", link)
@@ -115,6 +110,7 @@ def bracket_link(link):
         return '<a href="' + uri + '">[[' + link + ']]</a>'
 
     return "[[" + link + "]]"
+
 
 def print_record(fp, rec):
     sid = rec["id"][:8]
@@ -151,40 +147,24 @@ def print_record(fp, rec):
                (rec["target"], rec["pubkey"])
 
     fp.write('  <dt id="r%s">\n' % sid)
-    fp.write(
-        '    %s :<span class="name">%s</span>' % (sid, name) +
-        mail + sign + "\n" +
-        '    ' + stamp + "\n" +
-        attach +
-        "  </dt>\n" +
-        '  <dd id="b%s">\n' % sid +
-        "    " + body + "\n")
+    fp.write('    %s :<span class="name">%s</span>' % (sid, name) + mail + sign + "\n" + '    ' + stamp + "\n" +
+             attach + "  </dt>\n" + '  <dd id="b%s">\n'%sid + "    " + body + "\n")
     fp.write("  </dd>\n")
 
+
 def write_html(fp, rec):
-    fp.write(
-        '<!DOCTYPE html>\n' +
-        '<html xmlns="http://www.w3.org/1999/xhtml"' +
-        ' lang="ja" xml:lang="ja">\n' +
-        '<head>\n' +
-        '  <meta http-equiv="content-type"' +
-        ' content="text/html; charset=UTF-8" />\n' +
-        '  <title>%s</title>\n' % file_decode(rec.datfile) +
-        '  <link rel="author" href="http://www.shingetsu.info/" />\n' +
-        '  <link rel="contents" href="/" />\n' +
-        '  <link rel="stylesheet" type="text/css" href="/default.css" />\n' +
-        '</head>\n' +
-        '<body>\n' +
-        '<h1><a href="./">%s</a></h1>\n' % file_decode(rec.datfile) +
-        '<dl>\n')
+    fp.write('<!DOCTYPE html>\n' + '<html xmlns="http://www.w3.org/1999/xhtml"' + ' lang="ja" xml:lang="ja">\n' +
+             '<head>\n' + '  <meta http-equiv="content-type"' + ' content="text/html; charset=UTF-8" />\n' +
+             '  <title>%s</title>\n' % file_decode(rec.datfile) +
+             '  <link rel="author" href="http://www.shingetsu.info/" />\n' +
+             '  <link rel="contents" href="/" />\n' +
+             '  <link rel="stylesheet" type="text/css" href="/default.css" />\n' + '</head>\n' + '<body>\n' +
+             '<h1><a href="./">%s</a></h1>\n' % file_decode(rec.datfile) + '<dl>\n')
     print_record(fp, rec)
-    fp.write(
-        '</dl>\n' +
-        '<address>Powered by' +
-        ' <a href="http://www.shingetsu.info/">shinGETsu</a>.</address>\n')
-    fp.write(
-        '</body>\n' +
-        '</html>\n')
+    fp.write('</dl>\n' + '<address>Powered by' +
+             ' <a href="http://www.shingetsu.info/">shinGETsu</a>.</address>\n')
+    fp.write('</body>\n' + '</html>\n')
+
 
 def make_html(cache):
     title = md5digest(cache.datfile)
@@ -205,6 +185,7 @@ def make_html(cache):
             count += 1
     return count
 
+
 def copy_attach(cache):
     title = md5digest(cache.datfile)
     srcdir = os.path.join(shingetsu.config.cache_dir, cache.datfile)
@@ -222,6 +203,7 @@ def copy_attach(cache):
             copy(srcfile, dstfile)
             os.utime(dstfile, (stamp, stamp))
 
+
 def make_sitemap():
     f = opentext(os.path.join(archive_dir, 'sitemap.txt'), 'w')
     f.write('%s\n' % archive_uri)
@@ -230,9 +212,10 @@ def make_sitemap():
            (not os.path.isdir(os.path.join(archive_dir, d))):
             continue
         for html in os.listdir(os.path.join(archive_dir, d)):
-            if (len(html) != 8+5) or (not html.endswith('.html')):
+            if (len(html) != 8 + 5) or (not html.endswith('.html')):
                 continue
             f.write('%s%s/%s\n' % (archive_uri, d, html))
+
 
 def main():
     cachelist = CacheList()
@@ -242,6 +225,7 @@ def main():
             print(n, file_decode(cache.datfile))
         copy_attach(cache)
     make_sitemap()
+
 
 if __name__ == '__main__':
     main()

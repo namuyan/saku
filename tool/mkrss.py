@@ -54,15 +54,14 @@ def urlopen(url, lang='en'):
     req.add_header('Accept-Language', '%s;q=1.0' % lang)
     return urllib.request.urlopen(req)
 
+
 def get_rss(path):
-    rssfile = urlopen('%s%s%s%s' % (destination,
-                                     shingetsu.config.gateway,
-                                     sep,
-                                     path))
+    rssfile = urlopen('%s%s%s%s' % (destination, shingetsu.config.gateway, sep, path))
     date = rssfile.info().get("last-modified", "")
     rss = rssfile.read()
     rssfile.close()
     return date, rss
+
 
 def get_html(src, dst, lang='en'):
     htmlfile = urlopen(src, lang)
@@ -71,6 +70,7 @@ def get_html(src, dst, lang='en'):
     f = open(os.path.join(docroot, dst), 'wb')
     f.write(html)
     f.close()
+
 
 def check_date(date, filename):
     rssdate = os.path.join(docroot, filename)
@@ -83,33 +83,36 @@ def check_date(date, filename):
     else:
         opentext(rssdate, 'w').write(date)
 
+
 def write_rss(rss, filename):
     f = open(os.path.join(docroot, filename), 'wb')
     f.write(rss)
     f.close()
+
 
 def update_rss(command, filename, datefilename):
     date, rss = get_rss(command)
     check_date(date, datefilename)
     write_rss(rss, filename)
 
+
 def get_links():
     yield 'http://%s/' % server
     for cache in CacheList():
         type, basename = str(cache).split('_', 1)
-        link = 'http://%s%s%s%s' % (server,
-                                    shingetsu.config.application[type],
-                                    sep,
+        link = 'http://%s%s%s%s' % (server, shingetsu.config.application[type], sep,
                                     str_encode(file_decode(str(cache))))
         yield link
         for record in cache:
             yield '%s/%s' % (link, record.id[:8])
+
 
 def write_sitemap():
     f = opentext(os.path.join(docroot, 'sitemap.txt'), 'w')
     for i in get_links():
         f.write(i + "\n")
     f.close()
+
 
 def main():
     os.chdir(shingetsu.config.docroot)
@@ -119,6 +122,7 @@ def main():
     get_html(destination, 'index.html')
     get_html(destination, 'index.en.html', 'en')
     get_html(destination, 'index.ja.html', 'ja')
+
 
 if __name__ == "__main__":
     main()

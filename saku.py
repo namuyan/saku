@@ -40,11 +40,8 @@ def main():
     log_group = parser.add_mutually_exclusive_group()
     default_verbose = hasattr(sys, 'winver')
     log_group.add_argument(
-        '-v', '--verbose', default=default_verbose, action='store_true',
-        dest='print_log', help='print logs')
-    log_group.add_argument(
-        '--silent', action='store_false', dest='print_log',
-        help='suppress logs')
+        '-v', '--verbose', default=default_verbose, action='store_true', dest='print_log', help='print logs')
+    log_group.add_argument('--silent', action='store_false', dest='print_log', help='suppress logs')
     args = parser.parse_args()
 
     try:
@@ -56,11 +53,12 @@ def main():
         try:
             daemon.start_daemon()
             while True:
-                time.sleep(60*60)
+                time.sleep(60 * 60)
         finally:
             daemon.stop_daemon()
     except KeyboardInterrupt:
         sys.exit()
+
 
 if __name__ == "__main__":
     main()

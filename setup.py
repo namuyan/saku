@@ -25,9 +25,11 @@ sample_dir = "root/share/doc/saku/sample/"
 mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH
 execmode = mode | S_IXUSR | S_IXGRP | S_IXOTH
 
+
 def globcopy(src, dst):
     for i in glob(src):
         copy(i, dst)
+
 
 def globcat(src, dst):
     f = opentext(dst, 'w')
@@ -37,12 +39,13 @@ def globcat(src, dst):
         f.write(opentext(i).read())
     f.close()
 
+
 def setup_script_files():
     copy("saku.py", "saku")
 
+
 def setup_data_files():
-    for i in (lib_dir, data_dir, file_dir, template_dir,
-              www_dir, doc_dir, sample_dir):
+    for i in (lib_dir, data_dir, file_dir, template_dir, www_dir, doc_dir, sample_dir):
         if not os.path.isdir(i):
             os.makedirs(i)
 
@@ -83,12 +86,13 @@ def make_data_files():
             i = os.path.join(r, i)
             os.chmod(i, mode)
             data.append(i)
-        data_files.append((r[len("root")+1:], data))
+        data_files.append((r[len("root") + 1:], data))
     #os.chmod(os.path.join(init_dir, "saku"), execmode)
     os.chmod(os.path.join(lib_dir, "mkrss"), execmode)
     os.chmod(os.path.join(lib_dir, "mkarchive"), execmode)
 
     return data_files
+
 
 def make_version():
     found = re.search(r"\(.*/(.+)\)", shingetsu.config.version)
@@ -98,23 +102,24 @@ def make_version():
         version = shingetsu.config.version
     return version
 
+
 setup_script_files()
 setup_data_files()
 data_files = make_data_files()
 version = make_version()
 
-setup(name = "saku",
-      version = version,
-      description = "a clone of P2P anonymous BBS shinGETsu",
-      author = "Fuktommy",
-      maintainer = "Fuktommy",
-      maintainer_email = "fuktommy@shingetsu.info",
-      url = "http://www.shingetsu.info/",
-      license = '2-clause BSD license',
-      platforms = 'any',
-      long_description =
-            'A clone of P2P anonymous BBS shinGETsu written by Python.'
-            ' This includes libraries, daemon, and Apache config files.',
-      scripts = ['saku'],
-      packages = ['shingetsu', 'shingetsu.mch'],
-      data_files = data_files)
+setup(
+    name="saku",
+    version=version,
+    description="a clone of P2P anonymous BBS shinGETsu",
+    author="Fuktommy",
+    maintainer="Fuktommy",
+    maintainer_email="fuktommy@shingetsu.info",
+    url="http://www.shingetsu.info/",
+    license='2-clause BSD license',
+    platforms='any',
+    long_description='A clone of P2P anonymous BBS shinGETsu written by Python.'
+    ' This includes libraries, daemon, and Apache config files.',
+    scripts=['saku'],
+    packages=['shingetsu', 'shingetsu.mch'],
+    data_files=data_files)
