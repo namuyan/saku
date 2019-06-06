@@ -38,7 +38,6 @@ from .util import opentext
 
 
 class Logger:
-
     """Save logs to /LOGDIR/%Y-%m-%d.
     """
 
@@ -78,6 +77,7 @@ class Logger:
     def close(self):
         pass
 
+
 def setup():
     config.flags.append('light_cgi')
     config.abs_docroot = os.path.join(os.getcwd(), config.docroot)
@@ -87,10 +87,12 @@ def setup():
         if not os.path.isdir(i):
             os.makedirs(i)
 
+
 def set_logger(additional=None):
     logger = Logger(os.path.join(os.getcwd(), config.log_dir), additional)
     sys.stderr = logger
     sys.stdout = logger
+
 
 def start_daemon():
     for lock in (config.lock, config.search_lock, config.admin_search):
@@ -122,6 +124,7 @@ def start_daemon():
         datdaemon.start()
 
     return httpdaemon
+
 
 def stop_daemon():
     pass

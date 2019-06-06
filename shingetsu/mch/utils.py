@@ -1,4 +1,3 @@
-
 'utils'
 
 import sys
@@ -14,13 +13,14 @@ def log(s, *args, **kwds):
 
 def log_request(env):  # same as saku's log format
     fmt = '{host}<>{proxy}<>{method} {path} {protocol}<>{referer}<>{ua}'
-    msg = fmt.format(host=env['REMOTE_ADDR'],
-                     proxy=env.get('HTTP_X_FORWARDED_FOR', 'direct'),
-                     method=env['REQUEST_METHOD'],
-                     path=env['PATH_INFO'],
-                     protocol=env['SERVER_PROTOCOL'],
-                     referer=env.get('REFERER', ''),
-                     ua=env.get('USER_AGENT', ''))
+    msg = fmt.format(
+        host=env['REMOTE_ADDR'],
+        proxy=env.get('HTTP_X_FORWARDED_FOR', 'direct'),
+        method=env['REQUEST_METHOD'],
+        path=env['PATH_INFO'],
+        protocol=env['SERVER_PROTOCOL'],
+        referer=env.get('REFERER', ''),
+        ua=env.get('USER_AGENT', ''))
     log(msg)
 
 
@@ -31,6 +31,7 @@ def save_tag(cache, user_tag):
     user_tag_list.add([user_tag])
     user_tag_list.sync()
 
+
 def get_board(url):
     m = re.search(r'/2ch_([^/]+)/', url)
     if not m:
@@ -38,6 +39,7 @@ def get_board(url):
 
     board = title.file_decode('dummy_' + m.group(1))
     return board
+
 
 def sanitize(text):
     return text.replace('<', '&lt;').replace('>', '&gt;').replace('&', '&amp;').replace('"', '&quot;')

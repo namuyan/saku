@@ -43,6 +43,7 @@ __all__ = ['ConfList', 'RegExpList']
 class ConfList:
     '''List Style Config.
     '''
+
     def __init__(self, path):
         self.mtime = 0
         self.path = path
@@ -83,6 +84,7 @@ class ConfList:
     def __getitem__(self, index):
         return self.data[index]
 
+
 # End of ConfList
 
 
@@ -106,5 +108,6 @@ class RegExpList(ConfList):
             if r.search(target):
                 return True
         return False
+
 
 # End of RegExpList

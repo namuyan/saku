@@ -50,11 +50,11 @@ class Tag:
     def __str__(self):
         return self.tagstr
 
+
 # End of Tag
 
 
 class TagList(list):
-
     '''File includes list.
 
     One element par one line.
@@ -98,6 +98,7 @@ class TagList(list):
     def sync(self):
         self.tiedlist.sync()
 
+
 # End of TagList
 
 
@@ -120,10 +121,12 @@ class UserTagList(TagList):
         self.sort(key=lambda x: str(x))
         TagList.sync(self)
 
+
 # End of UserTagList
 
 
 class SuggestedTagList(TagList):
+
     def __init__(self, table, datfile, values=None):
         if values is None:
             values = []
@@ -143,6 +146,7 @@ class SuggestedTagList(TagList):
     def sync(self):
         self.table[self.datfile] = self
 
+
 # End of SuggestedTagList
 
 
@@ -151,9 +155,12 @@ class SuggestedTagTable:
 
     data: sugtags[filename] = [tag1, tag2, ...]
     '''
+
     def __init__(self):
+
         def sugtaglist():
             return SuggestedTagList(self, None)
+
         self.tieddict = tieddict(config.sugtag, Tag, True, sugtaglist)
 
     def __setitem__(self, key, taglist):
@@ -186,5 +193,6 @@ class SuggestedTagTable:
         for datfile in tmp:
             del self[datfile]
             del self.tieddict[datfile]
+
 
 # Enf of SuggestedTagTable

@@ -41,7 +41,6 @@ from .util import opentext
 
 
 class CGI(gateway.CGI):
-
     """Class for /gateway.cgi."""
 
     def run(self):
@@ -210,8 +209,7 @@ class CGI(gateway.CGI):
         else:
             self.print404()
             return
-        self.stdout.write("Content-Type: text/comma-separated-values;" +
-                          " charset=UTF-8\n\n")
+        self.stdout.write("Content-Type: text/comma-separated-values;" + " charset=UTF-8\n\n")
         writer = csv.writer(self.stdout)
         for cache in cachelist:
             title = self.file_decode(cache.datfile)
@@ -266,11 +264,9 @@ class CGI(gateway.CGI):
         elif self.form.getfirst("type", "") in config.types:
             tag = self.str_encode(self.form.getfirst('tag', ''))
             search = self.str_encode(self.form.getfirst('search_new_file', ''))
-            self.print302(self.appli[self.form.getfirst("type", "")] +
-                          self.sep +
-                          self.str_encode(self.form.getfirst("link", "")) +
-                          '?tag=' + tag +
-                          '&search_new_file=' + search)
+            self.print302(self.appli[self.form.getfirst("type", "")] + self.sep +
+                          self.str_encode(self.form.getfirst("link", "")) + '?tag=' + tag + '&search_new_file=' +
+                          search)
         else:
             self.print404()
 
@@ -292,27 +288,25 @@ class CGI(gateway.CGI):
         return buf
 
     def print_rss(self):
-        rss = RSS(encode = "UTF-8",
-                  title = self.message["logo"],
-                  parent = "http://" + self.host,
-                  uri = "http://" + self.host
-                                  + self.gateway_cgi + self.sep + "rss",
-                  description = self.message["description"],
-                  xsl = config.xsl)
+        rss = RSS(
+            encode="UTF-8",
+            title=self.message["logo"],
+            parent="http://" + self.host,
+            uri="http://" + self.host + self.gateway_cgi + self.sep + "rss",
+            description=self.message["description"],
+            xsl=config.xsl)
         cachelist = CacheList()
         now = int(time())
         for cache in cachelist:
             if cache.valid_stamp + config.rss_range >= now:
                 title = self.escape(self.file_decode(cache.datfile))
-                path = self.appli[cache.type]+self.sep+self.str_encode(title)
+                path = self.appli[cache.type] + self.sep + self.str_encode(title)
                 for r in cache:
                     if r.stamp + config.rss_range < now:
                         continue
                     r.load_body()
                     desc = self.rss_text_format(r.get("body", ""))
-                    content = self.rss_html_format(r.get("body", ""),
-                                                   self.appli[cache.type],
-                                                   title)
+                    content = self.rss_html_format(r.get("body", ""), self.appli[cache.type], title)
                     attach = r.get('attach', '')
                     if attach:
                         suffix = r.get('suffix', '')
@@ -330,32 +324,30 @@ class CGI(gateway.CGI):
                         permapath = path[1:]
                     rss.append(
                         permapath,
-                        date = r.stamp,
-                        title = title,
-                        creator = self.rss_text_format(r.get('name', '')),
-                        subject = [str(i) for i in cache.tags],
-                        description = desc,
-                        content = content)
+                        date=r.stamp,
+                        title=title,
+                        creator=self.rss_text_format(r.get('name', '')),
+                        subject=[str(i) for i in cache.tags],
+                        description=desc,
+                        content=content)
                     r.free()
 
         self.stdout.write("Content-Type: text/xml; charset=UTF-8\n")
         try:
-            self.stdout.write("Last-Modified: %s\n" %
-                              self.rfc822_time(rss[list(rss.keys())[0]].date))
+            self.stdout.write("Last-Modified: %s\n" % self.rfc822_time(rss[list(rss.keys())[0]].date))
         except IndexError as KeyError:
             pass
         self.stdout.write("\n")
         self.stdout.write(make_rss1(rss))
 
     def print_recent_rss(self):
-        rss = RSS(encode = 'UTF-8',
-                  title = '%s - %s' % (
-                          self.message['recent'], self.message['logo']),
-                  parent = 'http://' + self.host,
-                  uri = 'http://' + self.host
-                                  + self.gateway_cgi + self.sep + 'recent_rss',
-                  description = self.message['desc_recent'],
-                  xsl = config.xsl)
+        rss = RSS(
+            encode='UTF-8',
+            title='%s - %s' % (self.message['recent'], self.message['logo']),
+            parent='http://' + self.host,
+            uri='http://' + self.host + self.gateway_cgi + self.sep + 'recent_rss',
+            description=self.message['desc_recent'],
+            xsl=config.xsl)
         cachelist = self.make_recent_cachelist()
         for cache in cachelist:
             title = self.escape(self.file_decode(cache.datfile))
@@ -363,26 +355,23 @@ class CGI(gateway.CGI):
             if cache.type not in self.appli:
                 continue
             rss.append(
-                self.appli[cache.type][1:]+self.sep+self.str_encode(title),
-                date = cache.recent_stamp,
-                title = title,
-                subject = tags,
-                content = cgi.escape(title))
+                self.appli[cache.type][1:] + self.sep + self.str_encode(title),
+                date=cache.recent_stamp,
+                title=title,
+                subject=tags,
+                content=cgi.escape(title))
 
         self.stdout.write('Content-Type: text/xml; charset=UTF-8\n')
         try:
-            self.stdout.write('Last-Modified: %s\n' %
-                              self.rfc822_time(rss[list(rss.keys())[0]].date))
+            self.stdout.write('Last-Modified: %s\n' % self.rfc822_time(rss[list(rss.keys())[0]].date))
         except IndexError as KeyError:
             pass
         self.stdout.write('\n')
         self.stdout.write(make_rss1(rss))
 
     def print_mergedjs(self):
-        self.stdout.write('Content-Type: application/javascript;'
-            + ' charset=UTF-8')
-        self.stdout.write('Last-Modified: '
-            + self.rfc822_time(self.jscache.mtime) + '\n')
+        self.stdout.write('Content-Type: application/javascript;' + ' charset=UTF-8')
+        self.stdout.write('Last-Modified: ' + self.rfc822_time(self.jscache.mtime) + '\n')
         self.stdout.write('\n')
         self.stdout.write(self.jscache.script)
 
@@ -392,5 +381,6 @@ class CGI(gateway.CGI):
             self.stdout.write(opentext(config.motd).read())
         except IOError:
             self.stderr.write(config.motd + ": IOError\n")
+
 
 # End of CGI

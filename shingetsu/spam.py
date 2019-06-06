@@ -31,8 +31,8 @@ from .conflist import RegExpList
 
 __all__ = ['check']
 
-
 cached_rules = None
+
 
 def check(recstr):
     global cached_rules

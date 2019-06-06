@@ -38,6 +38,7 @@ __all__ = ['Template']
 
 
 class CachedTemplate(jinja2.BytecodeCache):
+
     def __init__(self):
         self.template = {}
 
@@ -48,16 +49,16 @@ class CachedTemplate(jinja2.BytecodeCache):
     def dump_bytecode(self, bucket):
         self.template[bucket.key] = bucket.bytecode_to_string()
 
+
 # End of CachedTemplate
 
 
 class Template:
+
     def __init__(self):
         self.defaults = {}
         self.env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(config.template_dir),
-            bytecode_cache=CachedTemplate()
-        )
+            loader=jinja2.FileSystemLoader(config.template_dir), bytecode_cache=CachedTemplate())
 
     def __getitem__(self, filename):
         basename = filename + config.template_suffix
@@ -88,5 +89,6 @@ class Template:
             return text
         else:
             return ''
+
 
 # End of Template

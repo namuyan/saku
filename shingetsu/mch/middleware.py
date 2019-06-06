@@ -10,6 +10,7 @@ import re
 # use as decorator.
 def gzipped(app):
     resp = {}
+
     def capture(s, h):
         resp['status'] = s
         resp['headers'] = h
@@ -38,6 +39,7 @@ def gzipped(app):
 
 def last_modified(app):
     resp = {}
+
     def capture(s, h):
         resp['status'] = s
         resp['headers'] = h
@@ -47,8 +49,7 @@ def last_modified(app):
         status = resp['status']
         headers = Headers(resp['headers'])
 
-        if (not 'Last-Modified' in headers
-            or not environ.get('HTTP_IF_MODIFIED_SINCE')):
+        if (not 'Last-Modified' in headers or not environ.get('HTTP_IF_MODIFIED_SINCE')):
             start_response(status, list(headers.items()))
             return raw
 
@@ -68,6 +69,7 @@ def last_modified(app):
 
 def simple_range(app):
     resp = {}
+
     def capture(s, h):
         resp['status'] = s
         resp['headers'] = h
@@ -80,15 +82,13 @@ def simple_range(app):
         headers.setdefault('Accept-Range', 'bytes')
         range = environ.get('HTTP_RANGE')
 
-        if (range is None
-            or ',' in range  # not deal with multi-part range
-            or not status.startswith('2')):  # not success status
+        if (range is None or ',' in range  # not deal with multi-part range
+                or not status.startswith('2')):  # not success status
             start_response(status, list(headers.items()))
             return raw
 
         def error_416():
-            start_response('416 Requested Range Not Satisfiable',
-                           list(headers.items()))
+            start_response('416 Requested Range Not Satisfiable', list(headers.items()))
             if hasattr(raw, 'close'):
                 raw.close()
             return [b'']
@@ -109,25 +109,23 @@ def simple_range(app):
             return error_416()
         if has_end and len(content) <= end:
             return error_416()
-        if has_begin and len(content) <= begin :
+        if has_begin and len(content) <= begin:
             return error_416()
 
         if has_begin and has_end:
             # bytes=begin-end
             c_range = 'bytes {}-{}/{}'.format(begin, end, len(content))
-            body = content[begin:end+1]
+            body = content[begin:end + 1]
 
         elif has_begin:
             # bytes=begin-
-            c_range = 'bytes {}-{}/{}'.format(begin, len(content)-1,
-                                              len(content))
+            c_range = 'bytes {}-{}/{}'.format(begin, len(content) - 1, len(content))
             body = content[begin:]
 
         else:
             # bytes=-end
-            c_range = 'bytes {}-{}/{}'.format(len(content)-end,
-                                              len(content)-1, len(content))
-            body = content[len(content)-end:]
+            c_range = 'bytes {}-{}/{}'.format(len(content) - end, len(content) - 1, len(content))
+            body = content[len(content) - end:]
 
         headers['Content-Range'] = c_range
         start_response('206 Partial Content', list(headers.items()))

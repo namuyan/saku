@@ -42,18 +42,19 @@ from . import config
 from .tiedobj import *
 from .conflist import *
 
-__all__ = ['Node', 'RawNodeList', 'NodeList', 'SearchList', 'LookupTable',
-           'init_node', 'node_allow', 'node_deny']
+__all__ = ['Node', 'RawNodeList', 'NodeList', 'SearchList', 'LookupTable', 'init_node', 'node_allow', 'node_deny']
 
 _init_node = None
 _node_allow = None
 _node_deny = None
+
 
 def urlopen(url):
     req = urllib.request.Request(url)
     req.add_header('Accept-Encoding', 'gzip')
     req.add_header('User-Agent', config.version)
     return urllib.request.urlopen(req)
+
 
 def init_node():
     global _init_node
@@ -65,6 +66,7 @@ def init_node():
         return config.init_node
     return list(_init_node)
 
+
 def node_allow():
     global _node_allow
     if _node_allow is None:
@@ -72,6 +74,7 @@ def node_allow():
     else:
         _node_allow.update()
     return _node_allow
+
 
 def node_deny():
     global _node_deny
@@ -83,6 +86,7 @@ def node_deny():
 
 
 class Broadcast(threading.Thread):
+
     def __init__(self, msg, cache):
         threading.Thread.__init__(self)
         self.msg = msg
@@ -108,6 +112,7 @@ class NodeError(Exception):
 class SocketIO:
     '''Wrapper for SimpleGzipFile and URLopener.
     '''
+
     def __init__(self, fp, msg):
         self.fp = fp
         self.msg = msg
@@ -120,11 +125,11 @@ class SocketIO:
             sys.stderr.write('%s: %s\n' % (self.msg, err))
             raise StopIteration
 
+
 # End of SocketIO
 
 
 class Node:
-
     """One unit for P2P."""
 
     nodestr = None
@@ -232,11 +237,11 @@ class Node:
             sys.stderr.write('/bye %s: error\n' % self)
             return False
 
+
 # End of Node
 
 
 class RawNodeList(list):
-
     """File includes list.
 
     One element par one line.
@@ -277,11 +282,11 @@ class RawNodeList(list):
         except ValueError:
             pass
 
+
 # End of RawNodeList
 
 
 class NodeList(RawNodeList):
-
     """Node list."""
 
     def __init__(self):
@@ -415,11 +420,11 @@ class NodeList(RawNodeList):
         broadcast = Broadcast(arg, cache)
         broadcast.start()
 
+
 # End of NodeList
 
 
 class SearchList(RawNodeList):
-
     """List of existing nodes."""
 
     def __init__(self):
@@ -476,6 +481,7 @@ class SearchList(RawNodeList):
             sys.stderr.write("Warning: Search nodes are null.\n")
         return None
 
+
 # End of SearchList
 
 
@@ -507,5 +513,6 @@ class LookupTable:
 
     def get(self, key, default=None):
         return self.tieddict.get(key, default)
+
 
 # End of LookupTable

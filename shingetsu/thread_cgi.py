@@ -42,7 +42,6 @@ import os.path
 
 
 class CGI(gateway.CGI):
-
     """Class for /thread.cgi."""
 
     appli_type = "thread"
@@ -77,15 +76,13 @@ class CGI(gateway.CGI):
             return
 
         #found = re.search(r"^(thread_[0-9A-F]+)/([0-9a-f]{32})/(\d+)\.(\d+)x(\d+)\.(.*)",
-        found = re.search(r"^(thread_[0-9A-F]+)/([0-9a-f]{32})/s(\d+)\.(\d+x\d+)\.(.*)",
-                          path)
+        found = re.search(r"^(thread_[0-9A-F]+)/([0-9a-f]{32})/s(\d+)\.(\d+x\d+)\.(.*)", path)
         if found:
             (datfile, stamp, id, thumbnail_size, suffix) = found.groups()
             self.print_attach(datfile, stamp, id, suffix, thumbnail_size)
             return
 
-        found = re.search(r"^(thread_[0-9A-F]+)/([0-9a-f]{32})/(\d+)\.(.*)",
-                          path)
+        found = re.search(r"^(thread_[0-9A-F]+)/([0-9a-f]{32})/(\d+)\.(.*)", path)
         if found:
             (datfile, stamp, id, suffix) = found.groups()
             self.print_attach(datfile, stamp, id, suffix, None)
@@ -107,8 +104,7 @@ class CGI(gateway.CGI):
 
     def setcookie(self, cache, access):
         now = int(time.time())
-        expires = time.strftime('%a, %d %b %Y %H:%M:%S GMT',
-                                time.gmtime(now + config.save_cookie))
+        expires = time.strftime('%a, %d %b %Y %H:%M:%S GMT', time.gmtime(now + config.save_cookie))
         path = self.thread_cgi + '/' + \
                   self.str_encode(self.file_decode(cache.datfile))
         cookie = SimpleCookie()
@@ -205,9 +201,9 @@ class CGI(gateway.CGI):
         if id:
             inrange = ids
         elif page:
-            inrange = ids[-page_size*(page+1):-page_size*page]
+            inrange = ids[-page_size * (page+1):-page_size * page]
         else:
-            inrange = ids[-page_size*(page+1):]
+            inrange = ids[-page_size * (page+1):]
         printed = False
         for k in inrange:
             rec = cache[k]
@@ -305,7 +301,7 @@ class CGI(gateway.CGI):
         else:
             self.print404(cache)
             return
-        rec = Record(datfile=cache.datfile, idstr=stamp+'_'+id)
+        rec = Record(datfile=cache.datfile, idstr=stamp + '_' + id)
         if not rec.exists():
             self.print404(cache)
             return
@@ -315,11 +311,8 @@ class CGI(gateway.CGI):
                 rec.make_thumbnail(suffix=suffix, thumbnail_size=thumbnail_size)
         if attach_file is not None:
             size = rec.attach_size(suffix=suffix, thumbnail_size=thumbnail_size)
-            self.stdout.write(
-                "Content-Type: " + type + "\n" +
-                "Last-Modified: " + self.rfc822_time(stamp) + "\n" +
-                "Content-Length: " + str(size) + "\n" +
-                "X-Content-Type-Options: nosniff\n")
+            self.stdout.write("Content-Type: " + type + "\n" + "Last-Modified: " + self.rfc822_time(stamp) + "\n" +
+                              "Content-Length: " + str(size) + "\n" + "X-Content-Type-Options: nosniff\n")
             if attachutil.seem_html(suffix):
                 self.stdout.write("Content-Disposition: attachment\n")
             self.stdout.write("\n")

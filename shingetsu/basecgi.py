@@ -37,7 +37,7 @@ class BodyFilter:
 
     When HEAD method is used, output HTTP header only.
     '''
-    mode = 'wb'     # Writable stream
+    mode = 'wb'  # Writable stream
 
     def __init__(self, env, output):
         self.output = output
@@ -53,14 +53,14 @@ class BodyFilter:
             #self.output.write(msg)
             bufsize = 1024
             for offset in range(0, len(msg), bufsize):
-                self.output.write(msg[offset:offset+bufsize])
+                self.output.write(msg[offset:offset + bufsize])
         elif self.ishead and self.flag_body:
             pass
         else:
             self.buf += msg.replace(b'\r\n', b'\n')
             i = self.buf.find(b'\n\n')
             if i >= 0:
-                self.output.write(self.buf[:i+2].replace(b'\n', b'\r\n'))
+                self.output.write(self.buf[:i + 2].replace(b'\n', b'\r\n'))
                 self.buf = b''
                 self.flag_body = True
 
@@ -77,11 +77,11 @@ class BodyFilter:
     def __del__(self):
         self.close()
 
+
 # End of BodyFilter
 
 
 class CGI:
-
     """Base CGI class.
 
     start(): start the CGI.
@@ -89,11 +89,7 @@ class CGI:
 
     """
 
-    def __init__(self,
-                 stdin=sys.stdin,
-                 stdout=sys.stdout,
-                 stderr=sys.stderr,
-                 environ=os.environ):
+    def __init__(self, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr, environ=os.environ):
         self.stdin = stdin
         self.stdout = BodyFilter(environ, stdout)
         self.stderr = stderr
@@ -105,11 +101,11 @@ class CGI:
         try:
             self.run()
         except (IOError, socket.error, socket.timeout) as strerror:
-            self.stderr.write("%s: %s\n" %
-                              (self.environ['REMOTE_ADDR'], strerror))
+            self.stderr.write("%s: %s\n" % (self.environ['REMOTE_ADDR'], strerror))
 
     def run(self):
         """Main routine for CGI."""
         pass
+
 
 # End of CGI

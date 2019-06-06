@@ -40,7 +40,6 @@ from .util import *
 
 
 class CGI(gateway.CGI):
-
     """Class for /admin.cgi."""
 
     def run(self):
@@ -70,10 +69,7 @@ class CGI(gateway.CGI):
             elif cmd == 'xfdel':
                 self.do_delete_file(rm_files)
             else:
-                self.do_delete_record(rm_files[0],
-                                      rm_records,
-                                      form.getfirst("dopost", ""),
-                                      form)
+                self.do_delete_record(rm_files[0], rm_records, form.getfirst("dopost", ""), form)
         elif path == "status":
             self.print_status()
         elif path == 'edittag':
@@ -126,11 +122,13 @@ class CGI(gateway.CGI):
         '''
         sid = self.make_sid()
         recs = [Record(datfile=datfile, idstr=r) for r in records]
+
         def getbody(rec):
             rec.load_body()
             recstr = cgi.escape(rec.recstr)
             rec.free()
             return recstr
+
         var = {
             'datfile': datfile,
             'records': recs,
@@ -193,11 +191,13 @@ class CGI(gateway.CGI):
         '''
         sid = self.make_sid()
         files = [Cache(c) for c in files]
+
         def gettitle(cache):
             for type in config.types:
                 if cache.datfile.startswith(type + '_'):
                     return self.file_decode(cache.datfile)
             return cache.datfile
+
         def getcontents(cache):
             contents = []
             for rec in cache:
@@ -207,6 +207,7 @@ class CGI(gateway.CGI):
                 if (len(contents) > 2):
                     return contents
             return contents
+
         var = {
             'sid': sid,
             'files': files,
@@ -277,15 +278,10 @@ class CGI(gateway.CGI):
             records += len(cache)
             size += cache.size
         myself = nodelist.myself()
-        status = (('linked_nodes', len(nodelist)),
-                  ('known_nodes', len(searchlist)),
-                  ('files', len(cachelist)),
-                  ('records', records),
-                  ('cache_size', '%.1f%s' % (size/1024/1024,
-                                             self.message['mb'])),
+        status = (('linked_nodes', len(nodelist)), ('known_nodes', len(searchlist)), ('files', len(cachelist)),
+                  ('records', records), ('cache_size', '%.1f%s' % (size / 1024 / 1024, self.message['mb'])),
                   ('self_node', myself))
-        node_status = (('linked_nodes', nodelist),
-                       ('known_nodes', searchlist))
+        node_status = (('linked_nodes', nodelist), ('known_nodes', searchlist))
         var = {
             'status': status,
             'node_status': node_status,
@@ -307,9 +303,7 @@ class CGI(gateway.CGI):
             'sugtags': cache.sugtags,
             'usertags': UserTagList(),
         }
-        self.header('%s: %s' %
-                        (self.message['edit_tag'], str_title),
-                    deny_robot=True)
+        self.header('%s: %s' % (self.message['edit_tag'], str_title), deny_robot=True)
         self.stdout.write(self.template('edit_tag', var))
         self.footer()
 
@@ -332,5 +326,6 @@ class CGI(gateway.CGI):
         else:
             next = self.root
         self.print302(next)
+
 
 # End of CGI

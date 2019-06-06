@@ -10,13 +10,21 @@ from shingetsu import cache as cachelib
 from . import utils
 from . import keylib
 
-weekday = {0: '月', 1: '火', 2: '水', 3: '木', 4: '金', 5: '土', 6: '日',}
+weekday = {
+    0: '月',
+    1: '火',
+    2: '水',
+    3: '木',
+    4: '金',
+    5: '土',
+    6: '日',
+}
+
 
 def _datestr_2ch(epoch_str):
     d = datetime.datetime.fromtimestamp(int(epoch_str))
     s = d.strftime('%Y/%m/%d({}) %H:%M:%S.00')
     return s.format(weekday[d.weekday()])
-
 
 
 def make_dat(cache, env, board):
@@ -27,7 +35,6 @@ def make_dat(cache, env, board):
         rec = cache[k]
         rec.load()
 
-
         name = rec.get('name')
         if not name:
             name = '名無しさん'
@@ -35,11 +42,10 @@ def make_dat(cache, env, board):
             name += '◆' + rec.get('pubkey')[:10]  # 10 is 2ch trip length
 
         comment = '{name}<>{mail}<>{date}<>{body}<>'.format(
-                name=name,
-                mail=rec.get('mail', ''),
-                date=_datestr_2ch(rec.get('stamp', 0)),
-                body=_make_body(rec, env, board, table)
-        )
+            name=name,
+            mail=rec.get('mail', ''),
+            date=_datestr_2ch(rec.get('stamp', 0)),
+            body=_make_body(rec, env, board, table))
         if i == 0:  # dat title
             comment += title.file_decode(cache.datfile)
         comment += '\n'
@@ -49,10 +55,10 @@ def make_dat(cache, env, board):
     return dat
 
 
-
 class ResTable(dict):
     't[res_id] -> res_number & t[res_number] -> res_id'
     'res_number is 1 origin'
+
     def __init__(self, cache):
         cache.load()
         for i, k in enumerate(list(cache.keys()), 1):
@@ -62,6 +68,7 @@ class ResTable(dict):
 
     def __getitem__(self, key):
         return self.get(key, key)
+
 
 def _make_body(rec, env, board, table):
     if config.server_name:
@@ -81,16 +88,15 @@ def _make_attach_link(rec, saku_host):
     if 'attach' not in rec:
         return rec.get('body', '')
 
-
     # saku's thread.cgi deal with attach file.
-    url = 'http://{}/thread.cgi/{}/{}/{}.{}'.format(
-        saku_host, rec.datfile, rec.id,
-        rec.stamp, rec.get('suffix', 'txt'))
+    url = 'http://{}/thread.cgi/{}/{}/{}.{}'.format(saku_host, rec.datfile, rec.id, rec.stamp,
+                                                    rec.get('suffix', 'txt'))
     body = rec.get('body', '') + '<br><br>[Attached]<br>' + url
     return body
 
 
 def _make_res_anchor(body, table):
+
     def replace(match):
         id = match.group(1)
         no = str(table[id])
@@ -104,8 +110,7 @@ def _make_bracket_link(body, dat_host, board, table):
     def replace(match):
         link = match.group(1)
         # saku's link format
-        for r in (r"^(?P<title>[^/]+)$",
-                  r"^/(?P<type>[a-z]+)/(?P<title>[^/]+)$",
+        for r in (r"^(?P<title>[^/]+)$", r"^/(?P<type>[a-z]+)/(?P<title>[^/]+)$",
                   r"^(?P<title>[^/]+)/(?P<id>[0-9a-f]{8})$",
                   r"^/(?P<type>[a-z]+)/(?P<title>[^/]+)/(?P<id>[0-9a-f]{8})$"):
             m = re.match(r, link)
@@ -136,6 +141,3 @@ def _make_bracket_link(body, dat_host, board, table):
             return '[[{title}(&gt;&gt;{no} {url})]]'.format(title=_title, no=no, url=url)
 
     return re.sub(r'\[\[([^<>]+?)\]\]', replace, body)
-
-
-

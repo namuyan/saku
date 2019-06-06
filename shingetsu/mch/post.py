@@ -61,7 +61,7 @@ def post_comment(env, thread_key, name, mail, body, passwd, tag=None):
     for x in p.finditer(body):
         try:
             file = keylib.get_filekey(x.group(1))
-            body = body.replace(x.group(0),'[[' + title.file_decode(file) + ']]')
+            body = body.replace(x.group(0), '[[' + title.file_decode(file) + ']]')
         except keylib.DatkeyNotFound:
             pass
 
@@ -86,7 +86,6 @@ def post_comment(env, thread_key, name, mail, body, passwd, tag=None):
     if tag:
         utils.save_tag(c, tag)
 
-
     queue = updatequeue.UpdateQueue()
     queue.append(c.datfile, stamp, id, None)
     queue.start()
@@ -94,24 +93,23 @@ def post_comment(env, thread_key, name, mail, body, passwd, tag=None):
 
 def error_resp(msg, start_response, host, name, mail, body):
     info = {'message': msg, 'host': host, 'name': name, 'mail': mail, 'body': body}
-    msg = (template.Template()
-        .display('2ch_error', info)
-        .encode('cp932', 'replace'))
+    msg = (template.Template().display('2ch_error', info).encode('cp932', 'replace'))
     start_response('200 OK', [('Content-Type', 'text/html; charset=Shift_JIS')])
     return [msg]
+
 
 success_msg = '''<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html"><title>書きこみました。</title></head>
 <body>書きこみが終わりました。<br><br></body></html>'''
 
 
 def _get_comment_data(env):
-    fs = cgi.FieldStorage(environ=env, fp=env['wsgi.input'],
-                          encoding='cp932')
+    fs = cgi.FieldStorage(environ=env, fp=env['wsgi.input'], encoding='cp932')
     prop = lambda s: fs[s].value if s in fs else ''
     mail = prop('mail')
     if mail.lower() == 'sage':
         mail = ''
     return [prop('subject'), prop('FROM'), mail, prop('MESSAGE'), prop('key')]
+
 
 def post_comment_app(env, resp):
     # print('post', env)
@@ -122,20 +120,15 @@ def post_comment_app(env, resp):
     # utils.log('post_comment_app')
     subject, name, mail, body, datkey = _get_comment_data(env)
 
-    info = {'host': env.get('REMOTE_ADDR', ''),
-            'name': name,
-            'mail': mail,
-            'body': body}
+    info = {'host': env.get('REMOTE_ADDR', ''), 'name': name, 'mail': mail, 'body': body}
 
     if body == '':
         return error_resp('本文がありません.', resp, **info)
-
 
     if subject:
         key = title.file_encode('thread', subject)
     else:
         key = keylib.get_filekey(datkey)
-
 
     has_auth = env.get('shingetsu.isadmin', False) or env.get('shingetsu.isfriend', False)
 
@@ -144,7 +137,6 @@ def post_comment_app(env, resp):
     tag = None
     if m and has_auth:
         tag = title.file_decode('dummy_' + m.group(1))
-
 
     if cache.Cache(key).exists():
         pass
@@ -159,9 +151,11 @@ def post_comment_app(env, resp):
         return error_resp('フォームが変です.', resp, **info)
 
     table = dat.ResTable(cache.Cache(key))
+
     def replace(match):
         no = int(match.group(1))
         return '>>' + table[no]
+
     # replace number anchor to id anchor
     body = re.sub(r'>>([1-9][0-9]*)', replace, body)  # before escape '>>'
 
@@ -173,7 +167,6 @@ def post_comment_app(env, resp):
     if (passwd and not env['shingetsu.isadmin']):
         return error_resp('自ノード以外で署名機能は使えません', resp, **info)
 
-
     try:
         post_comment(env, key, name, mail, body, passwd, tag)
     except SpamError:
@@ -181,4 +174,3 @@ def post_comment_app(env, resp):
 
     resp('200 OK', [('Content-Type', 'text/html; charset=Shift_JIS')])
     return [success_msg.encode('cp932', 'replace')]
-

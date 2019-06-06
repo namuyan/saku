@@ -44,6 +44,7 @@ def seem_html(suffix):
         'application/xhtml+xml',
     )
 
+
 def is_valid_image(mimetype, path):
     """Type of path is same as mimetype or not.
     """
@@ -59,12 +60,13 @@ def is_valid_image(mimetype, path):
         return True
     return False
 
+
 def is_wellknown_image(path):
     if not path:
         return False
     path_suffix = _imghdr.what(path)
     return path_suffix in (
-      'gif',
-      'jpeg',
-      'png',
+        'gif',
+        'jpeg',
+        'png',
     )

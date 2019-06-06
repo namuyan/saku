@@ -32,8 +32,7 @@ import sys
 
 from shingetsu import config
 
-__all__ = ['str_encode', 'str_decode', 'file_encode', 'file_decode',
-           'is_valid_file']
+__all__ = ['str_encode', 'str_decode', 'file_encode', 'file_decode', 'is_valid_file']
 
 _allchars_quoter = urllib.parse.Quoter('')
 _allchars_quoter.safe = []
@@ -51,6 +50,7 @@ def str_encode(query):
         query = str(query)
     return urllib.parse.quote(query)
 
+
 def str_decode(query):
     '''Decode URI.
 
@@ -58,6 +58,7 @@ def str_decode(query):
     '~'
     '''
     return urllib.parse.unquote(query)
+
 
 def file_encode(type, query):
     '''Encode for filename.
@@ -72,7 +73,8 @@ def file_encode(type, query):
         query = query.encode('utf-8', 'replace')
     quoted = ''.join([_allchars_quoter[char] for char in query])
     return ''.join([type, '_', quoted.replace('%', '')])
-                   
+
+
 def file_decode_type(query, type=None):
     """Decode file type.
 
@@ -83,6 +85,7 @@ def file_decode_type(query, type=None):
     if len(q) < 2:
         return type
     return q[0]
+
 
 def file_decode(query, type=None):
     '''Decode filename.
@@ -99,11 +102,12 @@ def file_decode(query, type=None):
     buf = []
     for i in range(0, len(query), 2):
         try:
-            buf.append(int(query[i:i+2], 16).to_bytes(1, 'big'))
+            buf.append(int(query[i:i + 2], 16).to_bytes(1, 'big'))
         except (ValueError, IndexError):
             sys.stderr.write(query + ': ValueError/IndexError\n')
             return None
     return str(b''.join(buf), 'utf-8', 'replace')
+
 
 def is_valid_file(query, type=None):
     '''Validate filename.
@@ -122,7 +126,7 @@ def is_valid_file(query, type=None):
     buf = []
     for i in range(0, len(query), 2):
         try:
-            buf.append(int(query[i:i+2], 16).to_bytes(1, 'big'))
+            buf.append(int(query[i:i + 2], 16).to_bytes(1, 'big'))
         except (ValueError, IndexError):
             return False
     try:
@@ -130,6 +134,7 @@ def is_valid_file(query, type=None):
         return True
     except UnicodeError:
         return False
+
 
 def file_hash(query):
     """Make hash from filename.

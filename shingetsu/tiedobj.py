@@ -126,6 +126,7 @@ class ListFile:
         finally:
             lock.release()
 
+
 # End of ListFile
 
 
@@ -229,12 +230,12 @@ class DictFile:
                 del _cache[self.path]
             f = opentext(self.path, 'w')
             for key in self.data:
-                line = ('%s<>%s\n' %
-                        (key, ' '.join([str(i) for i in self.data[key]])))
+                line = ('%s<>%s\n' % (key, ' '.join([str(i) for i in self.data[key]])))
                 f.write(line)
             f.close()
         finally:
             lock.release()
+
 
 # End of DictFile
 
@@ -251,6 +252,7 @@ def tiedlist(path, elemclass=None, caching=False):
                 return ListFile(path, elemclass, caching)
         finally:
             lock.release()
+
 
 def tieddict(path, elemclass=None, caching=False, listclass=None):
     if path in _cache:

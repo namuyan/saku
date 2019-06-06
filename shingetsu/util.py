@@ -65,11 +65,10 @@ def fsdiff(f, s):
         sys.stderr.write('%s: %s\n' % (f, e))
         return False
 
+
 def opentext(path, mode='r'):
     if mode == 'r':
         newline = None
     else:
         newline = '\n'
-    return open(path, mode,
-                encoding='utf-8', errors='replace',
-                newline=newline)
+    return open(path, mode, encoding='utf-8', errors='replace', newline=newline)

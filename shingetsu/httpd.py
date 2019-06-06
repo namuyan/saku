@@ -40,7 +40,6 @@ __version__ = "$Revision$"
 
 
 class Httpd(threading.Thread):
-
     """Tiny HTTP server running in another thread."""
 
     httpserv = None

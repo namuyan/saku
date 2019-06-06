@@ -36,16 +36,15 @@ class Item:
     """One item."""
 
     title = ""
-    link  = ""
+    link = ""
     description = ""
-    date  = 0           # Seconds from 1970-01-01T00:00
+    date = 0  # Seconds from 1970-01-01T00:00
 
-    def __init__(self, link="", title="", date=0, creator='', subject=None,
-                 description="", content=""):
+    def __init__(self, link="", title="", date=0, creator='', subject=None, description="", content=""):
         """Constructor."""
         del_eos = re.compile(r'[\r\n]*')
-        self.link  = link
-        self.date  = date
+        self.link = link
+        self.date = date
         self.creator = creator
         if subject:
             self.subject = subject
@@ -55,6 +54,7 @@ class Item:
         self.description = del_eos.sub('', description)
         self.content = content
 
+
 class RSS(dict):
     """RSS.
 
@@ -62,20 +62,19 @@ class RSS(dict):
     """
 
     encode = "utf-8"
-    lang   = "en"
-    title  = ""
-    parent = ""         # Place where is documents or RSS
-    link   = ""         # URI of main page
-    uri    = ""         # URI of RSS
+    lang = "en"
+    title = ""
+    parent = ""  # Place where is documents or RSS
+    link = ""  # URI of main page
+    uri = ""  # URI of RSS
     description = ""
 
-    def __init__(self, encode="utf-8", lang="en", title="",
-            parent="", link="", uri="", description="", xsl=""):
+    def __init__(self, encode="utf-8", lang="en", title="", parent="", link="", uri="", description="", xsl=""):
         """Constructor."""
 
         self.encode = encode
-        self.lang   = lang
-        self.title  = title
+        self.lang = lang
+        self.title = title
         self.description = description
         self.parent = parent
         self.xsl = xsl
@@ -93,25 +92,19 @@ class RSS(dict):
         else:
             self.uri = parent + "rss.xml"
 
-    def append(self, link,
-                title = "",
-                date = 0,
-                creator = '',
-                subject = None,
-                description = "",
-                content = "",
-                abs = False):
+    def append(self, link, title="", date=0, creator='', subject=None, description="", content="", abs=False):
         """Add an item."""
 
         if not abs:
             link = self.parent + link
-        item = Item(link,
-                    title = title,
-                    date = date,
-                    creator = creator,
-                    subject = subject,
-                    description = description,
-                    content = content)
+        item = Item(
+            link,
+            title=title,
+            date=date,
+            creator=creator,
+            subject=subject,
+            description=description,
+            content=content)
         self[link] = item
 
     def keys(self):
@@ -124,12 +117,15 @@ class RSS(dict):
     def __iter__(self):
         return iter(list(self.keys()))
 
+
 def make_rss1(rss):
     '''Generate RSS 1.0.
     '''
+
     def w3cdate(date):
         from time import strftime, gmtime
         return strftime('%Y-%m-%dT%H:%M:%SZ', gmtime(date))
+
     var = {
         'rss': rss,
         'feed': [rss[uri] for uri in rss],

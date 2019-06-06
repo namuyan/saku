@@ -46,12 +46,10 @@ from .template import Template
 from .updatequeue import UpdateQueue
 from .util import opentext
 
-
-dummyquery = str(int(time.time()));
+dummyquery = str(int(time.time()))
 
 
 class Message(dict):
-
     """Multi-language message for gateway."""
 
     def __init__(self, file):
@@ -72,6 +70,7 @@ class Message(dict):
             f.close()
         except IOError:
             sys.stderr.write(file + ": IOError\n")
+
 
 # End of Message
 
@@ -105,6 +104,7 @@ def search_message(accept_language):
                 return Message(file)
     return None
 
+
 # End of search_message
 
 
@@ -122,16 +122,8 @@ class CGI(basecgi.CGI):
     tag = None
     str_tag = ''
 
-    def __init__(self,
-                 stdin=sys.stdin,
-                 stdout=sys.stdout,
-                 stderr=sys.stderr,
-                 environ=os.environ):
-        basecgi.CGI.__init__(self,
-                             stdin=stdin,
-                             stdout=stdout,
-                             stderr=stderr,
-                             environ=environ)
+    def __init__(self, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr, environ=os.environ):
+        basecgi.CGI.__init__(self, stdin=stdin, stdout=stdout, stderr=stderr, environ=environ)
         if "HTTP_ACCEPT_LANGUAGE" in self.environ:
             al = self.environ["HTTP_ACCEPT_LANGUAGE"]
         else:
@@ -208,9 +200,7 @@ class CGI(basecgi.CGI):
         if msg is None:
             return ''
         msg = msg.replace("&", "&amp;")
-        msg = re.sub(r"&amp;(#\d+|#[Xx][0-9A-Fa-f]+|[A-Za-z0-9]+);",
-                     r"&\1;",
-                     msg)
+        msg = re.sub(r"&amp;(#\d+|#[Xx][0-9A-Fa-f]+|[A-Za-z0-9]+);", r"&\1;", msg)
         msg = msg.replace("<", "&lt;")
         msg = msg.replace(">", "&gt;")
         msg = msg.replace("\r", "")
@@ -221,7 +211,7 @@ class CGI(basecgi.CGI):
         var = {
             'cginame': cginame,
             'command': command,
-            'description': self.message.get('desc_'+command, ''),
+            'description': self.message.get('desc_' + command, ''),
         }
         return self.template('gateway_link', var)
 
@@ -243,8 +233,7 @@ class CGI(basecgi.CGI):
         }
         return self.template('menubar', var)
 
-    def header(self, title='', rss='',
-               cookie=None, deny_robot=False):
+    def header(self, title='', rss='', cookie=None, deny_robot=False):
         '''Print CGI and HTTP header.
         '''
         if rss == '':
@@ -277,8 +266,7 @@ class CGI(basecgi.CGI):
 
     def rfc822_time(self, stamp=0):
         """Return date and time in RFC822 format."""
-        return time.strftime("%a, %d %b %Y %H:%M:%S GMT",
-                             time.gmtime(int(stamp)))
+        return time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(int(stamp)))
 
     def res_anchor(self, id, appli, title, absuri=False):
         title = self.str_encode(title)
@@ -295,13 +283,9 @@ class CGI(basecgi.CGI):
         buf = plain.replace("<br>", "\n")
         buf = buf.expandtabs()
         buf = self.escape(buf)
-        buf = re.sub(r"https?://[^\x00-\x20\"'()<>\[\]\x7F-\xFF]{2,}",
-                     r'<a href="\g<0>">\g<0></a>',
-                     buf)
+        buf = re.sub(r"https?://[^\x00-\x20\"'()<>\[\]\x7F-\xFF]{2,}", r'<a href="\g<0>">\g<0></a>', buf)
         buf = re.sub(r"(&gt;&gt;)([0-9a-f]{8})",
-                     self.res_anchor(r"\2", appli, title, absuri=absuri) +
-                     r"\g<0></a>",
-                     buf)
+                     self.res_anchor(r"\2", appli, title, absuri=absuri) + r"\g<0></a>", buf)
         buf = re.sub(r'\[\[<a.*?>(.*?)\]\]</a>', r'[[\1]]', buf)
 
         tmp = ""
@@ -380,7 +364,7 @@ class CGI(basecgi.CGI):
 
         # my tags
         with opentext(config.run_dir + '/tag.txt') as f:
-            tags =  [t.strip() for t in f]
+            tags = [t.strip() for t in f]
 
         for tag in tags:
             cat_url = mch_url.replace('2ch', file_encode('2ch', tag))
@@ -471,7 +455,7 @@ class CGI(basecgi.CGI):
         str_attach = ''
 
         if (attach is not None) and attach.file:
-            if len(attach.value) > config.record_limit*1024:
+            if len(attach.value) > config.record_limit * 1024:
                 self.header(self.message["big_file"], deny_robot=True)
                 self.footer()
                 return None
@@ -531,11 +515,9 @@ class CGI(basecgi.CGI):
         id = rec.build(stamp, body, passwd=passwd)
 
         proxy_client = self.environ.get('HTTP_X_FORWARDED_FOR', 'direct')
-        self.stderr.write('post %s/%d_%s from %s/%s\n' %
-                          (cache.datfile, stamp, id,
-                           self.remoteaddr, proxy_client))
+        self.stderr.write('post %s/%d_%s from %s/%s\n' % (cache.datfile, stamp, id, self.remoteaddr, proxy_client))
 
-        if len(rec.recstr) > config.record_limit*1024:
+        if len(rec.recstr) > config.record_limit * 1024:
             self.header(self.message['big_file'], deny_robot=True)
             self.footer()
             return None
@@ -577,14 +559,13 @@ class CGI(basecgi.CGI):
         text = re.sub(r'<br> ', '<br>&nbsp;', text)
         text = re.sub(r'^ ', '&nbsp;', text)
         text = re.sub(r' $', '&nbsp;', text)
-        text = text.replace('<br>', '<br />\n');
+        text = text.replace('<br>', '<br />\n')
         return text
 
     def escape_js(self, text):
-        return text.replace('"', r'\"').replace(']]>', '');
+        return text.replace('"', r'\"').replace(']]>', '')
 
-    def make_list_item(self, cache,
-                       remove=True, target='changes', search=False):
+    def make_list_item(self, cache, remove=True, target='changes', search=False):
         x = self.file_decode(cache.datfile)
         if not x:
             return ''
@@ -628,8 +609,7 @@ class CGI(basecgi.CGI):
         }
         return self.template('list_item', var)
 
-    def print_index_list(self, cachelist,
-                         target='', footer=True, search_new_file=False):
+    def print_index_list(self, cachelist, target='', footer=True, search_new_file=False):
         var = {
             'target': target,
             'filter': self.str_filter,
@@ -640,11 +620,12 @@ class CGI(basecgi.CGI):
         }
         self.stdout.write(self.template('index_list', var))
         if footer:
-            self.print_new_element_form();
+            self.print_new_element_form()
             self.footer()
 
     def print_paragraph(self, contents):
         var = {'contents': contents}
         self.stdout.write(self.template('paragraph', var))
+
 
 # End of CGI

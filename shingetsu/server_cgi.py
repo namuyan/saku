@@ -43,7 +43,6 @@ from .util import opentext
 
 
 class CGI(basecgi.CGI):
-
     """Class for /server.cgi."""
 
     def run(self):
@@ -257,7 +256,7 @@ class CGI(basecgi.CGI):
 
     def do_update(self, path_info):
         self.header("text/plain")
-        m = re.search(r"^update/(\w+)/(\d+)/(\w+)/([^:]*):(\d+)(.*)",path_info)
+        m = re.search(r"^update/(\w+)/(\d+)/(\w+)/([^:]*):(\d+)(.*)", path_info)
         if m is None:
             return False
         (datfile, stamp, id, host, port, path) = m.groups()
@@ -284,7 +283,7 @@ class CGI(basecgi.CGI):
         if (int(stamp) < now - config.update_range) or \
            (int(stamp) > now + config.update_range):
             return False
-        rec = Record(datfile=datfile, idstr=stamp+"_"+id)
+        rec = Record(datfile=datfile, idstr=stamp + "_" + id)
         updatelist = UpdateList()
         if rec in updatelist:
             return True
@@ -307,5 +306,6 @@ class CGI(basecgi.CGI):
         if cache.node and node in cache.node:
             return True
         return False
+
 
 # End of CGI

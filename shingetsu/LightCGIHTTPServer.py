@@ -39,15 +39,18 @@ from threading import RLock
 from . import config
 from . import admin_cgi, server_cgi, gateway_cgi, thread_cgi
 
-cgimodule = {"admin.cgi": admin_cgi,
-             "server.cgi": server_cgi,
-             "gateway.cgi": gateway_cgi,
-             "thread.cgi": thread_cgi}
+cgimodule = {
+    "admin.cgi": admin_cgi,
+    "server.cgi": server_cgi,
+    "gateway.cgi": gateway_cgi,
+    "thread.cgi": thread_cgi
+}
 
 
 class ConnectionCounter:
     '''Connection Counter.
     '''
+
     def __init__(self):
         self.counter = 0
         self.lock = RLock()
@@ -69,13 +72,13 @@ class ConnectionCounter:
     def __int__(self):
         return self.counter
 
+
 # End of ConnectionCounter
 
 _counter = ConnectionCounter()
 
 
 class HTTPRequestHandler(http.server.CGIHTTPRequestHandler):
-
     """Tiny HTTP Server.
 
     Exec CGI if script name ends with .cgi.
@@ -111,8 +114,7 @@ class HTTPRequestHandler(http.server.CGIHTTPRequestHandler):
     def log_request(self, code='-', size='-'):
         buf = [self.requestline]
         if hasattr(self, "headers"):
-            buf.extend((self.headers.get("Referer", ""),
-                        self.headers.get("User-Agent", "")))
+            buf.extend((self.headers.get("Referer", ""), self.headers.get("User-Agent", "")))
         self.log_message("%s", "<>".join(buf))
 
     def log_message(self, format, *args):
@@ -120,10 +122,7 @@ class HTTPRequestHandler(http.server.CGIHTTPRequestHandler):
             proxy_client = self.headers.get('X-Forwarded-For', 'direct')
         else:
             proxy_client = '?'
-        sys.stderr.write('%s<>%s<>%s\n' %
-                         (self.address_string(),
-                          proxy_client,
-                          format % args))
+        sys.stderr.write('%s<>%s<>%s\n' % (self.address_string(), proxy_client, format % args))
 
     def run_cgi(self):
         """Execute a CGI script in this process.
@@ -139,7 +138,7 @@ class HTTPRequestHandler(http.server.CGIHTTPRequestHandler):
         i = path.find('/', len(dir) + 1)
         while i >= 0:
             nextdir = path[:i]
-            nextrest = path[i+1:]
+            nextrest = path[i + 1:]
 
             scriptdir = self.translate_path(nextdir)
             if os.path.isdir(scriptdir):
@@ -151,7 +150,7 @@ class HTTPRequestHandler(http.server.CGIHTTPRequestHandler):
         # find an explicit query string, if present.
         i = rest.rfind('?')
         if i >= 0:
-            rest, query = rest[:i], rest[i+1:]
+            rest, query = rest[:i], rest[i + 1:]
         else:
             query = ''
         # dissect the part after the directory name into a script name &
@@ -213,8 +212,8 @@ class HTTPRequestHandler(http.server.CGIHTTPRequestHandler):
         # XXX Other HTTP_* headers
         # Since we're setting the env in the parent, provide empty
         # values to override previously set values
-        for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH',
-                  'HTTP_USER_AGENT', 'HTTP_COOKIE', 'HTTP_REFERER'):
+        for k in ('QUERY_STRING', 'REMOTE_HOST', 'CONTENT_LENGTH', 'HTTP_USER_AGENT', 'HTTP_COOKIE',
+                  'HTTP_REFERER'):
             env.setdefault(k, "")
 
         # HTTP_* headers require by SAKU
@@ -246,10 +245,7 @@ class HTTPRequestHandler(http.server.CGIHTTPRequestHandler):
         try:
             _counter.inclement()
             try:
-                cgiobj = cgiclass(stdin=self.rfile,
-                                  stdout=self.wfile,
-                                  stderr=sys.stderr,
-                                  environ=env)
+                cgiobj = cgiclass(stdin=self.rfile, stdout=self.wfile, stderr=sys.stderr, environ=env)
                 cgiobj.start()
             except SystemExit as sts:
                 self.log_error("CGI script exit status %s", str(sts))

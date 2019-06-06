@@ -60,20 +60,19 @@ lock = RLock()
 
 
 class Record(dict):
-
     """One article of BBS.
 
     timestamp<>id<>foo:bar<>hoge:fuga<>...
     """
 
-    recstr = ""     # record in string format
-    datfile = ""    # cache file
-    stamp = 0       # date when the record made
-    id = ""         # md5sum
-    idstr = ""      # stamp_id
-    path = ""       # path for real file
+    recstr = ""  # record in string format
+    datfile = ""  # cache file
+    stamp = 0  # date when the record made
+    id = ""  # md5sum
+    idstr = ""  # stamp_id
+    path = ""  # path for real file
     body_path = ''  # path for body (record without attach field)
-    rm_path = ""    # path for removed marker
+    rm_path = ""  # path for removed marker
     flag_load = False
     flag_load_body = False
 
@@ -123,18 +122,9 @@ class Record(dict):
         if (self.idstr == "") or (self.datfile == ""):
             return
         self.dathash = title.file_hash(self.datfile)
-        self.path = os.path.join(config.cache_dir,
-                                 self.dathash,
-                                 'record',
-                                 self.idstr)
-        self.body_path = os.path.join(config.cache_dir,
-                                      self.dathash,
-                                      'body',
-                                      self.idstr)
-        self.rm_path = os.path.join(config.cache_dir,
-                                    self.dathash,
-                                    'removed',
-                                    self.idstr)
+        self.path = os.path.join(config.cache_dir, self.dathash, 'record', self.idstr)
+        self.body_path = os.path.join(config.cache_dir, self.dathash, 'body', self.idstr)
+        self.rm_path = os.path.join(config.cache_dir, self.dathash, 'removed', self.idstr)
 
     def parse(self, recstr):
         """Parse cache record."""
@@ -317,8 +307,8 @@ class Record(dict):
         elif (not force) and self.exists():
             pass
         else:
-            self._write_file(self.path, str(self)+"\n")
-        body = self.body_string()+'\n'
+            self._write_file(self.path, str(self) + "\n")
+        body = self.body_string() + '\n'
         if 'attach' in self:
             self._sync_attach(force)
             if force or (not fsdiff(self.body_path, body)):
@@ -329,8 +319,7 @@ class Record(dict):
 
     def _sync_attach(self, force):
         attach_path = self.attach_path(self.get('suffix', 'txt'))
-        thumbnail_path = self.attach_path(self.get('suffix', 'jpg'),
-                            thumbnail_size=config.thumbnail_size)
+        thumbnail_path = self.attach_path(self.get('suffix', 'jpg'), thumbnail_size=config.thumbnail_size)
         try:
             attach = base64.decodestring(self['attach'].encode('utf-8'))
             if force or (not fsdiff(attach_path, attach)):
@@ -376,7 +365,7 @@ class Record(dict):
                 return False
             except ValueError:
                 return False
-        target = target[2:]         # remove ^<>
+        target = target[2:]  # remove ^<>
 
         md = md5digest(target)
         if apollo.verify(md, self["sign"], self["pubkey"]):
@@ -418,12 +407,14 @@ class Record(dict):
             self.free()
             return False
 
+
 # End of Record
 
 
 class RecordGetter:
     '''Iterator to get records with heads.
     '''
+
     def __init__(self, datfile, node, head):
         self.datfile = datfile
         self.node = node
@@ -431,22 +422,20 @@ class RecordGetter:
 
     def __iter__(self):
         for h in self.head:
-            r = Record(datfile = self.datfile,
-                       idstr = h.strip().replace('<>', '_'))
+            r = Record(datfile=self.datfile, idstr=h.strip().replace('<>', '_'))
             if not (r.exists() or r.removed()):
                 try:
-                    res = self.node.talk('/get/%s/%d/%s' %
-                                    (self.datfile, r.stamp, r.id))
+                    res = self.node.talk('/get/%s/%d/%s' % (self.datfile, r.stamp, r.id))
                     first = re.sub(r'[\r\n]*$', '', next(iter(res)))
                     yield first
                 except StopIteration as err:
                     sys.stderr.write('get %s: %s\n' % (self, err))
 
+
 # End of RecordGetter
 
 
 class Cache(dict):
-
     """Cache of BBS.
 
     Plain text (encode: UTF-8).
@@ -455,12 +444,12 @@ class Cache(dict):
 
     datfile = ""
     datpath = config.cache_dir
-    stamp = 0       # when the cache is modified
-    size = 0        # size of cache file
-    count = 0       # records count
-    velocity = 0    # records count per unit time
+    stamp = 0  # when the cache is modified
+    size = 0  # size of cache file
+    count = 0  # records count
+    velocity = 0  # records count per unit time
     loaded = False  # loaded records
-    type = ""       # "thread"
+    type = ""  # "thread"
 
     def __init__(self, datfile, sugtagtable=None, recentlist=None):
         dict.__init__(self)
@@ -482,8 +471,7 @@ class Cache(dict):
         self.count = self._load_status('count')
         self.velocity = self._load_status('velocity')
         self.node = RawNodeList(os.path.join(self.datpath, 'node.txt'))
-        self.tags = TagList(self.datfile,
-                            os.path.join(self.datpath, 'tag.txt'))
+        self.tags = TagList(self.datfile, os.path.join(self.datpath, 'tag.txt'))
         if sugtagtable is None:
             sugtagtable = SuggestedTagTable()
         if self.datfile in sugtagtable:
@@ -605,10 +593,8 @@ class Cache(dict):
                ((end is None) or (r.stamp <= end)) and \
                r.md5check():
                 flag_got = True
-                if (len(i) > config.record_limit*1024) or spam.check(i):
-                    sys.stderr.write(
-                        'Warning: %s/%s: too large or spam record.\n' %
-                        (self.datfile, r.idstr))
+                if (len(i) > config.record_limit * 1024) or spam.check(i):
+                    sys.stderr.write('Warning: %s/%s: too large or spam record.\n' % (self.datfile, r.idstr))
                     self.add_data(r, False)
                     r.remove()
                     flag_spam = True
@@ -621,8 +607,7 @@ class Cache(dict):
                     str_stamp = '/%s' % r['stamp']
                 else:
                     str_stamp = ''
-                sys.stderr.write("Warning: %s%s: broken record.\n" %
-                                 (self.datfile, str_stamp))
+                sys.stderr.write("Warning: %s%s: broken record.\n" % (self.datfile, str_stamp))
             r.free()
         return count, flag_got, flag_spam
 
@@ -633,8 +618,7 @@ class Cache(dict):
         if count:
             self.sync_status()
         else:
-            sys.stderr.write("Warning: %s/%s: records not found.\n" %
-                             (self.datfile, stamp))
+            sys.stderr.write("Warning: %s/%s: records not found.\n" % (self.datfile, stamp))
         return flag_got, flag_spam
 
     def get_with_range(self, node=None):
@@ -698,8 +682,7 @@ class Cache(dict):
                     try:
                         os.remove(os.path.join(dir, idstr))
                     except OSError as err:
-                        sys.stderr.write("%s/%s: OSError: %s\n" %
-                                         (dir, idstr, err))
+                        sys.stderr.write("%s/%s: OSError: %s\n" % (dir, idstr, err))
         except (IOError, OSError) as err:
             sys.stderr.write('IOError/OSError: %s\n' % err)
 
@@ -775,9 +758,7 @@ class Cache(dict):
             nodelist = NodeList()
             myself = nodelist.myself()
         lookuptable = LookupTable()
-        node = searchlist.search(self,
-                                 myself = myself,
-                                 nodes = lookuptable.get(self.datfile, []))
+        node = searchlist.search(self, myself=myself, nodes=lookuptable.get(self.datfile, []))
         if node is not None:
             nodelist = NodeList()
             if node not in nodelist:
@@ -795,11 +776,11 @@ class Cache(dict):
             self.sync_status()
             return False
 
+
 # End of Cache
 
 
 class CacheList(list):
-
     """All cache."""
 
     def __init__(self):
@@ -847,8 +828,7 @@ class CacheList(list):
                 if i == hash:
                     continue
                 sys.stderr.write('rehash %s to %s\n' % (i, hash))
-                shutil.move(os.path.join(config.cache_dir, i),
-                            os.path.join(config.cache_dir, hash))
+                shutil.move(os.path.join(config.cache_dir, i), os.path.join(config.cache_dir, hash))
                 to_reload = True
             except (IOError, OSError, IndexError) as err:
                 sys.stderr.write('rehash error %s for %s\n' % (err, i))
@@ -885,7 +865,7 @@ class CacheList(list):
                             cache.valid_stamp = rec.stamp
                         cache.size += len(str(rec))
                         cache.count += 1
-                        if now - 7 * 24 * 60 * 60 < rec.stamp:
+                        if now - 7*24*60*60 < rec.stamp:
                             cache.velocity += 1
                         rec.sync()
                         rec.free()
@@ -929,9 +909,8 @@ class CacheList(list):
                         os.remove(cache.datpath + "/removed/" + r)
                     except OSError as xxx_todo_changeme:
                         (errno, errorstr) = xxx_todo_changeme.args
-                        sys.stderr.write("OSError: %s: %s\n" %
-                                         (cache.datpath + "/removed/" + r,
-                                          errorstr))
+                        sys.stderr.write("OSError: %s: %s\n" % (cache.datpath + "/removed/" + r, errorstr))
+
 
 # End of CacheList
 
@@ -939,6 +918,7 @@ class CacheList(list):
 class VirtualRecord(Record):
     '''Record like object for UpdateList.
     '''
+
     def __str__(self):
         line = "<>".join((str(self.stamp), self.id, self.datfile))
         return line
@@ -948,25 +928,21 @@ class VirtualRecord(Record):
                (self.id == r.id) and \
                (self.datfile == r.datfile)
 
+
 # End of VirtualRecord
 
 
 class UpdateList:
-
     """Save update information.
 
     Get update if the system does not have the update.
     """
 
-    def __init__(self,
-                 update_file = config.update,
-                 update_range = config.update_range):
+    def __init__(self, update_file=config.update, update_range=config.update_range):
         self.update_file = update_file
         self.update_range = update_range
         self.lookup = {}
-        self.tiedlist = tiedlist(self.update_file,
-                                 self.make_record,
-                                 True)
+        self.tiedlist = tiedlist(self.update_file, self.make_record, True)
 
     def __iter__(self):
         return iter(self.tiedlist)
@@ -1005,6 +981,7 @@ class UpdateList:
                (r.stamp + self.update_range < now):
                 self.tiedlist.remove(r)
         self.tiedlist.sync()
+
 
 # End of UpdateList
 
@@ -1074,6 +1051,7 @@ class RecentList(UpdateList):
         '''Save list.'''
         self.uniq()
         UpdateList.sync(self)
+
 
 # End of RecentList
 

@@ -9,12 +9,12 @@ from . import utils
 
 
 class _DatkeyTable:
+
     def __init__(self, file):
         self.file = file
         self.datkey2filekey = {}  # epoch stamp -> `Cache.datfile`
         self.filekey2datkey = {}  # `Cache.datfile` -> epoch stamp
         self.lock = threading.Lock()
-
 
     def load(self):
         try:
@@ -31,7 +31,6 @@ class _DatkeyTable:
         except IOError:
             pass
 
-
     def save(self):
         try:
             with util.opentext(self.file, 'w') as f:
@@ -41,12 +40,10 @@ class _DatkeyTable:
         except IOError:
             utils.log('keylib._DatkeyTable.save fails')
 
-
     def set_entry(self, stamp, filekey):
         with self.lock:
             self.datkey2filekey[stamp] = filekey
             self.filekey2datkey[filekey] = stamp
-
 
     def set_from_cache(self, cache):
         if cache.datfile in self.filekey2datkey:
@@ -58,14 +55,13 @@ class _DatkeyTable:
         except IndexError:
             first_stamp = cache.recent_stamp  # if don't have recent_stamp, it's 0
         if not first_stamp:
-            first_stamp = int(time.time() - 24 * 60 * 60)
+            first_stamp = int(time.time() - 24*60*60)
 
         # avoid duplication
         while first_stamp in self.datkey2filekey:
             first_stamp += 1
 
         self.set_entry(first_stamp, cache.datfile)
-
 
     def get_datkey(self, filekey):
         if filekey in self.filekey2datkey:
@@ -82,7 +78,6 @@ class _DatkeyTable:
             return self.filekey2datkey[filekey]
 
         raise DatkeyNotFound(filekey + ' not found')
-
 
     def get_filekey(self, datkey):
         datkey = int(datkey)
@@ -123,6 +118,7 @@ def load():
         _datkey_table.set_from_cache(c)
 
     save()
+
 
 def save():
     _datkey_table.save()

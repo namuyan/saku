@@ -42,12 +42,14 @@ __all__ = ['UpdateQueue']
 
 lock = RLock()
 
+
 class _UpdateQueue:
     '''Update Manager.
 
     self.queue is a tieddict like as
     self.queue[stamp<>id<>datfile] = [node1, node2, ...]
     '''
+
     def __init__(self):
         self.queue = tieddict(None)
         self.running = False
@@ -59,7 +61,7 @@ class _UpdateQueue:
     def start(self):
         t = Thread(target=self.run)
         t.start()
- 
+
     def run(self):
         try:
             lock.acquire(True)
@@ -81,7 +83,7 @@ class _UpdateQueue:
 
     def do_update(self, updateid):
         stamp, id, datfile = updateid.split('<>')
-        rec = Record(datfile=datfile, idstr=stamp+'_'+id)
+        rec = Record(datfile=datfile, idstr=stamp + '_' + id)
         for node in self.queue[updateid]:
             done = self.do_update_node(rec, node)
             if done:
@@ -137,10 +139,12 @@ class _UpdateQueue:
         else:
             return False
 
+
 # End of _UpdateQueue
 
 
 def UpdateQueue():
     return _queue
+
 
 _queue = _UpdateQueue()

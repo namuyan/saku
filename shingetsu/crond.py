@@ -80,11 +80,11 @@ class Crond(Thread):
                 self.gc_counter[k] = counter[k]
         print('GC', len(objects), len(gc.garbage), collect, tmp)
 
+
 # End of Crond
 
 
 class Status(dict):
-
     """Time stamp for client process.
 
     format:
@@ -122,6 +122,7 @@ class Status(dict):
         """Task is done."""
         self[key] = str(int(time.time()))
 
+
 # End of Status
 
 
@@ -147,8 +148,7 @@ class Client(Thread):
                 self.do_sync()
             status = Status()
 
-        if (int(time.time()) - status["init"]
-            >= config.init_cycle * len(nodelist)):
+        if (int(time.time()) - status["init"] >= config.init_cycle * len(nodelist)):
             self.do_init()
             status = Status()
         elif len(nodelist) < config.nodes:
@@ -204,17 +204,14 @@ class Client(Thread):
         sys.stderr.write("shingetsu.cache.CacheList.rehash() finished\n")
 
         cachelist.clean_records()
-        sys.stderr.write("shingetsu.cache.CacheList.clean_records()" +
-                          " finished\n")
+        sys.stderr.write("shingetsu.cache.CacheList.clean_records()" + " finished\n")
 
         cachelist.remove_removed()
-        sys.stderr.write("shingetsu.cache.CacheList.remove_removed()" +
-                          " finished\n")
+        sys.stderr.write("shingetsu.cache.CacheList.remove_removed()" + " finished\n")
 
         user_tag_list = UserTagList()
         user_tag_list.update_all()
-        sys.stderr.write("shingetsu.tag.UserTagList.update_all()" +
-                          " finished\n")
+        sys.stderr.write("shingetsu.tag.UserTagList.update_all()" + " finished\n")
 
         recentlist = RecentList()
         recentlist.getall()
@@ -222,5 +219,6 @@ class Client(Thread):
 
         cachelist.getall(timelimit=self.timelimit)
         sys.stderr.write("shingetsu.cache.CacheList.getall() finished\n")
+
 
 # End of Client

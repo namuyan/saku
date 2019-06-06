@@ -40,19 +40,18 @@ from shingetsu import config
 from shingetsu import gateway
 from shingetsu import tag
 
-
 from . import post
 from . import middleware
 from . import dat
 from . import utils
 from . import keylib
 
-
-board_re= re.compile(r'/([^/]+)/$')
+board_re = re.compile(r'/([^/]+)/$')
 thread_re = re.compile(r'/([^/]+)/dat/([^.]+)\.dat')
 subject_re = re.compile(r'/([^/]+)/subject\.txt')
 post_comment_re = re.compile(r'/test/bbs\.cgi')
 head_re = re.compile(r'/([^/]+)/head\.txt$')
+
 
 @middleware.simple_range
 @middleware.last_modified
@@ -63,8 +62,7 @@ def dat_app(env, resp):
     env['shingetsu.isadmin'] = bool(config.re_admin.match(addr))
     env['shingetsu.isfriend'] = bool(config.re_friend.match(addr))
     env['shingetsu.isvisitor'] = bool(config.re_visitor.match(addr))
-    isopen = (env['shingetsu.isadmin'] or env['shingetsu.isfriend']
-              or env['shingetsu.isvisitor'])
+    isopen = (env['shingetsu.isadmin'] or env['shingetsu.isfriend'] or env['shingetsu.isvisitor'])
 
     utils.log_request(env)
     path = env.get('PATH_INFO', '')
@@ -72,13 +70,8 @@ def dat_app(env, resp):
         resp('403 Forbidden', [('Content-Type', 'text/plain')])
         return [b'403 Forbidden']
 
-    routes = [
-        (board_re, board_app),
-        (subject_re, subject_app),
-        (thread_re, thread_app),
-        (post_comment_re, post.post_comment_app),
-        (head_re, head_app)
-    ]
+    routes = [(board_re, board_app), (subject_re, subject_app), (thread_re, thread_app),
+              (post_comment_re, post.post_comment_app), (head_re, head_app)]
     try:
         for (route, app) in routes:
             m = route.match(path)
@@ -104,6 +97,8 @@ def check_get_cache(env):
 _lock = threading.Lock()
 _update_counter = collections.defaultdict(int)
 _UPDATE_COUNT = 4  # once every _UPDATE_COUNT times
+
+
 def _count_is_update(thread_key):
     with _lock:
         try:
@@ -178,7 +173,6 @@ def thread_app(env, resp):
     return (c.encode('cp932', 'replace') for c in thread)
 
 
-
 def make_subject_cachelist(board):
     """Make RecentList&CacheList"""
     recentlist = cache.RecentList()
@@ -202,6 +196,7 @@ def make_subject_cachelist(board):
         sugtags = tag.SuggestedTagTable()
         result = [c for c in result if has_tag(c, board, sugtags)]
     return result
+
 
 def subject_app(env, resp):
     # utils.log('subject_app')
@@ -229,7 +224,6 @@ def subject_app(env, resp):
     return (s.encode('cp932', 'replace') for s in subjects)
 
 
-
 def make_subject(env, board):
     load_from_net = check_get_cache(env)
 
@@ -253,12 +247,8 @@ def make_subject(env, board):
         title_str = title.file_decode(c.datfile)
         if title_str is not None:
             title_str = title_str.replace('\n', '')
-        subjects.append('{key}.dat<>{title} ({num})\n'.format(
-            key=key,
-            title=title_str,
-            num=len(c)))
+        subjects.append('{key}.dat<>{title} ({num})\n'.format(key=key, title=title_str, num=len(c)))
     return subjects, last_stamp
-
 
 
 def has_tag(c, board, sugtags):
@@ -278,6 +268,7 @@ def head_app(env, resp):
 
 
 class Datd(threading.Thread):
+
     def __init__(self, *args, **kwds):
         super(Datd, self).__init__(*args, **kwds)
         self._port = config.dat_port
@@ -289,11 +280,11 @@ class Datd(threading.Thread):
             import waitress
         except ImportError:
             utils.log('use wsgiref')
-            class Server(socketserver.ThreadingMixIn,
-                         simple_server.WSGIServer):
+
+            class Server(socketserver.ThreadingMixIn, simple_server.WSGIServer):
                 pass
-            _server = simple_server.make_server('', self._port, dat_app,
-                                                server_class=Server)
+
+            _server = simple_server.make_server('', self._port, dat_app, server_class=Server)
             _server.serve_forever()
         else:
             utils.log('use waitress')

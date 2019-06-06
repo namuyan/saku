@@ -38,6 +38,7 @@ __all__ = ['JsCache']
 class JsCache:
     '''JavaScript Cache.
     '''
+
     def __init__(self, path):
         self._path = path
         self.mtime = 0
@@ -70,5 +71,6 @@ class JsCache:
             self.script = '\n'.join(buf)
         except (IOError, OSError) as err:
             sys.stderr.write('IOError/OSError: %s\n' % err)
+
 
 # End of JsCache
