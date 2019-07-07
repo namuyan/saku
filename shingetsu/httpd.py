@@ -1,5 +1,5 @@
-'''Tiny HTTP server running in another thread.
-'''
+"""Tiny HTTP server running in another thread.
+"""
 #
 # Copyright (c) 2005-2008 shinGETsu Project.
 # All rights reserved.

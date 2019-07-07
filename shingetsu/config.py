@@ -27,7 +27,6 @@
 #
 
 import re
-import sys
 import os.path
 import configparser
 
@@ -57,13 +56,13 @@ def _get_version():
             f = open(version_file, encoding='utf-8', errors='replace')
             version += '; git/%s' % f.read().strip()
             f.close()
-        except (IOError, OSError):
+        except OSError:
             pass
     return 'shinGETsu/0.7 (Saku/%s)' % version
 
 
 # External config files.
-_extconf = configparser.SafeConfigParser()
+_extconf = configparser.ConfigParser()
 _extconf.read([
     'file/saku.ini', '/usr/local/etc/saku/saku.ini', '/etc/saku/saku.ini',
     os.path.expanduser('~/.saku/saku.ini')

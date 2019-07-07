@@ -56,10 +56,13 @@ def make_dat(cache, env, board):
 
 
 class ResTable(dict):
-    't[res_id] -> res_number & t[res_number] -> res_id'
-    'res_number is 1 origin'
+    """
+    t[res_id] -> res_number & t[res_number] -> res_id
+    res_number is 1 origin
+    """
 
     def __init__(self, cache):
+        dict.__init__(self)
         cache.load()
         for i, k in enumerate(list(cache.keys()), 1):
             rec = cache[k]

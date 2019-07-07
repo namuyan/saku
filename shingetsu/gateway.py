@@ -27,6 +27,7 @@
 #
 
 import cgi
+import html
 import os
 import re
 import urllib.request, urllib.error, urllib.parse
@@ -68,8 +69,8 @@ class Message(dict):
                         buf[1] = urllib.parse.unquote(buf[1])
                         self[buf[0]] = buf[1]
             f.close()
-        except IOError:
-            sys.stderr.write(file + ": IOError\n")
+        except OSError:
+            sys.stderr.write(file + ": OSError\n")
 
 
 # End of Message
@@ -121,6 +122,7 @@ class CGI(basecgi.CGI):
     str_filter = ''
     tag = None
     str_tag = ''
+    host = ''
 
     def __init__(self, stdin=sys.stdin, stdout=sys.stdout, stderr=sys.stderr, environ=os.environ):
         basecgi.CGI.__init__(self, stdin=stdin, stdout=stdout, stderr=stderr, environ=environ)
@@ -136,7 +138,7 @@ class CGI(basecgi.CGI):
         self.isvisitor = config.re_visitor.search(addr)
         self.obj_template = Template()
         self.template = self.obj_template.display
-        self.jscache = JsCache(config.abs_docroot)
+        self.jscache = JsCache(config.docroot)
         var = {
             'cgi': self,
             'environ': self.environ,
@@ -157,7 +159,7 @@ class CGI(basecgi.CGI):
             'str_encode': self.str_encode,
             'file_decode': self.file_decode,
             'escape': self.escape,
-            'escape_simple': lambda s: cgi.escape(s, True),
+            'escape_simple': lambda s: html.escape(s, True),
             'escape_space': self.escape_space,
             'escape_js': self.escape_js,
             'make_list_item': self.make_list_item,
@@ -217,7 +219,7 @@ class CGI(basecgi.CGI):
 
     def extension(self, suffix, use_merged=True):
         filename = []
-        for i in os.listdir(config.abs_docroot):
+        for i in os.listdir(config.docroot):
             if i.endswith('.%s' % suffix) and \
                (not (i.startswith('.') or i.startswith('_'))):
                 filename.append(i)
@@ -373,7 +375,7 @@ class CGI(basecgi.CGI):
         return categories
 
     def print_jump(self, next):
-        '''Print jump script.'''
+        """Print jump script."""
         var = {
             'next': next,
         }
@@ -386,13 +388,13 @@ class CGI(basecgi.CGI):
         self.footer()
 
     def print403(self):
-        '''Print CGI header (403 forbidden).'''
+        """Print CGI header (403 forbidden)."""
         self.header(self.message['403'], deny_robot=True)
         self.print_paragraph(self.message['403_body'])
         self.footer()
 
     def print404(self, cache=None, id=None):
-        '''Print CGI header (404 not found).'''
+        """Print CGI header (404 not found)."""
         self.header(self.message['404'], deny_robot=True)
         self.print_paragraph(self.message['404_body'])
         if cache is not None:
@@ -422,12 +424,12 @@ class CGI(basecgi.CGI):
             lockfile = config.search_lock
         try:
             os.remove(lockfile)
-        except (OSError, IOError) as err:
-            self.stderr.write('%s: OSError/IOError: %s\n' % (lockfile, err))
+        except OSError as err:
+            self.stderr.write('%s: OSError: %s\n' % (lockfile, err))
             return False
 
     def get_cache(self, cache):
-        '''Search cache from network.'''
+        """Search cache from network."""
         result = cache.search()
         self.unlock()
         return result
@@ -463,7 +465,7 @@ class CGI(basecgi.CGI):
                 attach_value = attach.value.encode('utf-8', 'replace')
             else:
                 attach_value = attach.value
-            b64attach = base64.encodestring(attach_value)
+            b64attach = base64.encodebytes(attach_value)
             str_attach = str(b64attach, 'utf-8', 'replace').replace("\n", "")
         guess_suffix = "txt"
         if (attach is not None) and attach.filename:

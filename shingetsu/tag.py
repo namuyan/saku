@@ -1,5 +1,5 @@
-'''Tagging.
-'''
+"""Tagging.
+"""
 #
 # Copyright (c) 2005-2014 shinGETsu Project.
 # All rights reserved.
@@ -38,10 +38,10 @@ __all__ = ['TagList', 'UserTagList', 'SuggestedTagList', 'SuggestedTagTable']
 
 
 class Tag:
-    '''Tag.
+    """Tag.
 
     Including tag-string and its weight.
-    '''
+    """
 
     def __init__(self, tagstr, weight=0):
         self.tagstr = str(tagstr)
@@ -55,10 +55,10 @@ class Tag:
 
 
 class TagList(list):
-    '''File includes list.
+    """File includes list.
 
     One element par one line.
-    '''
+    """
 
     def __init__(self, datfile, path, caching=False):
         self.datfile = datfile
@@ -103,8 +103,8 @@ class TagList(list):
 
 
 class UserTagList(TagList):
-    '''User's All Tags.
-    '''
+    """User's All Tags.
+    """
 
     def __init__(self):
         TagList.__init__(self, None, config.taglist, True)
@@ -151,10 +151,10 @@ class SuggestedTagList(TagList):
 
 
 class SuggestedTagTable:
-    '''Suggested Tag Table.
+    """Suggested Tag Table.
 
     data: sugtags[filename] = [tag1, tag2, ...]
-    '''
+    """
 
     def __init__(self):
 
@@ -165,9 +165,6 @@ class SuggestedTagTable:
 
     def __setitem__(self, key, taglist):
         self.tieddict[key] = taglist
-
-    def __getitem__(self, key):
-        return self.tieddict[key]
 
     def __getitem__(self, key):
         return self.tieddict[key]

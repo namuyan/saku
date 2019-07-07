@@ -1,5 +1,5 @@
-'''Saku Template Wrapper.
-'''
+"""Saku Template Wrapper.
+"""
 #
 # Copyright (c) 2007,2014 shinGETsu Project.
 # All rights reserved.

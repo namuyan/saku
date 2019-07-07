@@ -110,8 +110,8 @@ class NodeError(Exception):
 
 
 class SocketIO:
-    '''Wrapper for SimpleGzipFile and URLopener.
-    '''
+    """Wrapper for SimpleGzipFile and URLopener.
+    """
 
     def __init__(self, fp, msg):
         self.fp = fp
@@ -195,8 +195,9 @@ class Node:
             return False
 
     def join(self):
-        '''Connect.
-        '''
+        """Connect.
+        """
+        welcome = extnode = None
         try:
             if node_allow().check(str(self)):
                 pass
@@ -431,8 +432,8 @@ class SearchList(RawNodeList):
         RawNodeList.__init__(self, config.search, True)
 
     def join(self, node):
-        '''Add node.
-        '''
+        """Add node.
+        """
         if node not in self:
             self.append(node)
 
@@ -486,10 +487,10 @@ class SearchList(RawNodeList):
 
 
 class LookupTable:
-    '''Filename to Node Mapping Table.
+    """Filename to Node Mapping Table.
 
     data: lookuptable[filename] = [node1, node2, ...]
-    '''
+    """
 
     def __init__(self):
         self.tosave = False

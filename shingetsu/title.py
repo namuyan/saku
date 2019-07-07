@@ -1,5 +1,5 @@
-'''Title Utilities.
-'''
+"""Title Utilities.
+"""
 #
 # Copyright (c) 2005-2014 shinGETsu Project.
 # All rights reserved.
@@ -39,35 +39,35 @@ _allchars_quoter.safe = []
 
 
 def str_encode(query):
-    '''Encode for URI.
+    """Encode for URI.
 
     >>> str_encode('~')
     '%7E'
     >>> str_encode(b'~')
     '%7E'
-    '''
+    """
     if not isinstance(query, bytes):
         query = str(query)
     return urllib.parse.quote(query)
 
 
 def str_decode(query):
-    '''Decode URI.
+    """Decode URI.
 
     >>> str_decode('%7E')
     '~'
-    '''
+    """
     return urllib.parse.unquote(query)
 
 
 def file_encode(type, query):
-    '''Encode for filename.
+    """Encode for filename.
 
     >>> file_encode('foo', 'a')
     'foo_61'
     >>> file_encode('foo', '~')
     'foo_7E'
-    '''
+    """
     buf = [type, '_']
     if isinstance(query, str):
         query = query.encode('utf-8', 'replace')
@@ -88,11 +88,11 @@ def file_decode_type(query, type=None):
 
 
 def file_decode(query, type=None):
-    '''Decode filename.
+    """Decode filename.
 
     >>> file_decode('foo_7E')
     '~'
-    '''
+    """
     q = query.split('_')
     if len(q) < 2:
         return None
@@ -110,13 +110,13 @@ def file_decode(query, type=None):
 
 
 def is_valid_file(query, type=None):
-    '''Validate filename.
+    """Validate filename.
 
     >>> is_valid_file('thread_7E')
     True
     >>> is_valid_file('foo_7Ex')
     False
-    '''
+    """
     q = query.split('_')
     if len(q) < 2:
         return False

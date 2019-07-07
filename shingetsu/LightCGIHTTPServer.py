@@ -48,8 +48,8 @@ cgimodule = {
 
 
 class ConnectionCounter:
-    '''Connection Counter.
-    '''
+    """Connection Counter.
+    """
 
     def __init__(self):
         self.counter = 0

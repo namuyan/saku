@@ -1,10 +1,10 @@
-'''List Style Config.
+"""List Style Config.
 
 The object is tied a file.
 When the file is updated, the object is updated too.
 
 Encoding must be UTF-8.
-'''
+"""
 #
 # Copyright (c) 2006-2015 shinGETsu Project.
 # All rights reserved.
@@ -41,8 +41,8 @@ __all__ = ['ConfList', 'RegExpList']
 
 
 class ConfList:
-    '''List Style Config.
-    '''
+    """List Style Config.
+    """
 
     def __init__(self, path):
         self.mtime = 0
@@ -69,8 +69,8 @@ class ConfList:
                     continue
                 self.data.append(pat)
             f.close()
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
 
     def compile(self, pat):
         return pat
@@ -89,10 +89,10 @@ class ConfList:
 
 
 class RegExpList(ConfList):
-    '''RegExp list.
+    """RegExp list.
 
     One regexp per one line.
-    '''
+    """
 
     def compile(self, pat):
         try:
@@ -102,8 +102,8 @@ class RegExpList(ConfList):
             return None
 
     def check(self, target):
-        '''Match target for all regexp.
-        '''
+        """Match target for all regexp.
+        """
         for r in self.data:
             if r.search(target):
                 return True

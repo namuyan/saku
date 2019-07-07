@@ -80,7 +80,7 @@ class Logger:
 
 def setup():
     config.flags.append('light_cgi')
-    config.abs_docroot = os.path.join(os.getcwd(), config.docroot)
+    config.docroot = os.path.join(os.getcwd(), config.docroot)
     for i in [os.path.join(config.docroot, j) for j in \
                 (config.run_dir, config.cache_dir)] + \
              [config.log_dir]:
@@ -107,8 +107,8 @@ def start_daemon():
         try:
             pidfile = os.path.join(config.docroot, config.pid)
             open(pidfile, 'w').write('%d' % os.getpid())
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
 
     crondaemon = crond.Crond()
     crondaemon.setDaemon(True)

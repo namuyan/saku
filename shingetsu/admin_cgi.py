@@ -28,6 +28,7 @@
 
 import os
 import cgi
+import html
 import re
 from random import random
 
@@ -60,8 +61,8 @@ class CGI(gateway.CGI):
             else:
                 self.print_delete_record(rm_files[0], rm_records)
         elif ((cmd == 'xrdel') or (cmd == 'xfdel')) and \
-             self.environ["REQUEST_METHOD"] == "POST" and \
-             self.check_sid(form.getfirst("sid", "")):
+                self.environ["REQUEST_METHOD"] == "POST" and \
+                self.check_sid(form.getfirst("sid", "")):
             rm_files = form.getlist('file')
             rm_records = form.getlist('record')
             if (not rm_files) or ((cmd == 'xrdel') and (not rm_records)):
@@ -77,14 +78,14 @@ class CGI(gateway.CGI):
             if datfile:
                 self.print_edittag(datfile)
             else:
-                print404()
+                self.print404()
         elif path == 'savetag':
             datfile = form.getfirst('file', '')
             tags = form.getfirst('tag', '')
             if datfile:
                 self.save_tag(datfile, tags)
             else:
-                print404()
+                self.print404()
         elif path.startswith("search"):
             self.print_search(path, form)
         else:
@@ -99,33 +100,31 @@ class CGI(gateway.CGI):
         sid = md5digest(r)
         try:
             opentext(sidfile, 'w').write(sid + '\n')
-        except IOError as err:
-            self.stderr.write("%s: IOError: %s\n" % (sidfile, err))
+        except OSError as err:
+            self.stderr.write("%s: OSError: %s\n" % (sidfile, err))
         return sid
 
     def check_sid(self, sid):
         """Check admin sid for security."""
         sidfile = config.admin_sid
+        saved = None
         try:
             saved = open(sidfile).read().strip()
             os.remove(sidfile)
             return sid == saved
-        except IOError as err:
-            self.stderr.write("%s: IOError: %s\n" % (sidfile, err))
-            return False
         except OSError as err:
             self.stderr.write("%s: OSError: %s\n" % (sidfile, err))
             return sid == saved
 
     def print_delete_record(self, datfile, records):
-        '''Delete record dialog.
-        '''
+        """Delete record dialog.
+        """
         sid = self.make_sid()
         recs = [Record(datfile=datfile, idstr=r) for r in records]
 
         def getbody(rec):
             rec.load_body()
-            recstr = cgi.escape(rec.recstr)
+            recstr = html.escape(rec.recstr)
             rec.free()
             return recstr
 
@@ -202,7 +201,7 @@ class CGI(gateway.CGI):
             contents = []
             for rec in cache:
                 rec.load_body()
-                contents.append(cgi.escape(rec.recstr))
+                contents.append(html.escape(rec.recstr))
                 rec.free()
                 if (len(contents) > 2):
                     return contents
@@ -231,13 +230,13 @@ class CGI(gateway.CGI):
         self.stdout.write(self.template('search_form', var))
 
     def print_search_result(self, query):
-        str_query = cgi.escape(query, True)
+        str_query = html.escape(query, True)
         title = '%s : %s' % (self.message['search'], str_query)
         self.header(title, deny_robot=True)
         self.print_paragraph(self.message['desc_search'])
         self.print_search_form(str_query)
         try:
-            query = re.compile(cgi.escape(query), re.I)
+            query = re.compile(html.escape(query), re.I)
             cachelist = CacheList()
             result = cachelist.search(query)
             for i in cachelist:
@@ -293,9 +292,9 @@ class CGI(gateway.CGI):
     def print_edittag(self, datfile):
         str_title = self.file_decode(datfile)
         cache = Cache(datfile)
-        datfile = cgi.escape(datfile)
+        datfile = html.escape(datfile)
         if not cache.exists():
-            print404()
+            self.print404()
             return
         var = {
             'datfile': datfile,
@@ -310,7 +309,7 @@ class CGI(gateway.CGI):
     def save_tag(self, datfile, tags):
         cache = Cache(datfile)
         if not cache.exists():
-            print404()
+            self.print404()
             return
         taglist = tags.split()
         cache.tags.update(taglist)

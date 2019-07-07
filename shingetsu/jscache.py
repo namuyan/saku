@@ -1,5 +1,5 @@
-'''JavaScript Cache.
-'''
+"""JavaScript Cache.
+"""
 #
 # Copyright (c) 2014 shinGETsu Project.
 # All rights reserved.
@@ -36,8 +36,8 @@ __all__ = ['JsCache']
 
 
 class JsCache:
-    '''JavaScript Cache.
-    '''
+    """JavaScript Cache.
+    """
 
     def __init__(self, path):
         self._path = path
@@ -69,8 +69,8 @@ class JsCache:
             for i in scripts:
                 buf.append(opentext(i).read())
             self.script = '\n'.join(buf)
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
 
 
 # End of JsCache

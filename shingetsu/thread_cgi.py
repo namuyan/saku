@@ -1,5 +1,5 @@
-'''Saku Thread CGI methods.
-'''
+"""Saku Thread CGI methods.
+"""
 #
 # Copyright (c) 2005-2015 shinGETsu Project.
 # All rights reserved.
@@ -27,10 +27,11 @@
 #
 
 import cgi
+import html
 import mimetypes
 import re
 import time
-from http.cookies import SimpleCookie
+from http.cookies import SimpleCookie, CookieError
 
 from . import attachutil
 from . import config
@@ -212,7 +213,7 @@ class CGI(gateway.CGI):
                 printed = True
             rec.free()
         self.stdout.write("</dl>\n")
-        escaped_path = cgi.escape(path)
+        escaped_path = html.escape(path)
         escaped_path = re.sub(r'  ', '&nbsp;&nbsp;', escaped_path)
         var = {
             'cache': cache,
@@ -323,5 +324,5 @@ class CGI(gateway.CGI):
                     self.stdout.write(buf)
                     buf = f.read(1024)
                 f.close()
-            except IOError:
+            except OSError:
                 self.print404(cache)

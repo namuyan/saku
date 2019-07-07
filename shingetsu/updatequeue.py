@@ -1,5 +1,5 @@
-'''Update Manager.
-'''
+"""Update Manager.
+"""
 #
 # Copyright (c) 2005-2014 shinGETsu Project.
 # All rights reserved.
@@ -44,11 +44,11 @@ lock = RLock()
 
 
 class _UpdateQueue:
-    '''Update Manager.
+    """Update Manager.
 
     self.queue is a tieddict like as
     self.queue[stamp<>id<>datfile] = [node1, node2, ...]
-    '''
+    """
 
     def __init__(self):
         self.queue = tieddict(None)

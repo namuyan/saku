@@ -168,8 +168,8 @@ class Record(dict):
             parse_ok = self.parse(f.readline())
             f.close()
             return parse_ok
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
             self.free()
             return False
 
@@ -271,8 +271,8 @@ class Record(dict):
             f.write(data)
             f.close()
             return True
-        except IOError:
-            sys.stderr.write(path + ": IOError\n")
+        except OSError:
+            sys.stderr.write(path + ": OSError\n")
             return False
 
     def make_thumbnail(self, suffix=None, thumbnail_size=config.thumbnail_size):
@@ -296,7 +296,7 @@ class Record(dict):
             im = PIL.Image.open(attach_path)
             im.thumbnail(size, PIL.Image.ANTIALIAS)
             im.save(thumbnail_path)
-        except (IOError, KeyError) as err:
+        except (OSError, KeyError) as err:
             sys.stderr.write('PIL error: %s for %s\n' % (err, attach_path))
         return
 
@@ -321,7 +321,7 @@ class Record(dict):
         attach_path = self.attach_path(self.get('suffix', 'txt'))
         thumbnail_path = self.attach_path(self.get('suffix', 'jpg'), thumbnail_size=config.thumbnail_size)
         try:
-            attach = base64.decodestring(self['attach'].encode('utf-8'))
+            attach = base64.decodebytes(self['attach'].encode('utf-8'))
             if force or (not fsdiff(attach_path, attach)):
                 self._write_file(attach_path, attach)
             if force or (not os.path.isfile(thumbnail_path)):
@@ -331,8 +331,8 @@ class Record(dict):
             for p in (attach_path, thumbnail_path):
                 try:
                     os.remove(p)
-                except (IOError, OSError) as err:
-                    sys.stderr.write('IOError/OSError: %s: %s\n' % (p, err))
+                except OSError as err:
+                    sys.stderr.write('OSError: %s: %s\n' % (p, err))
 
     def body_string(self):
         """Remove attach field."""
@@ -402,8 +402,8 @@ class Record(dict):
                     os.remove(path)
             self.free()
             return True
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
             self.free()
             return False
 
@@ -412,8 +412,8 @@ class Record(dict):
 
 
 class RecordGetter:
-    '''Iterator to get records with heads.
-    '''
+    """Iterator to get records with heads.
+    """
 
     def __init__(self, datfile, node, head):
         self.datfile = datfile
@@ -536,8 +536,8 @@ class Cache(dict):
             v = f.readline()
             f.close()
             return int(v.strip())
-        except IOError:
-            #sys.stderr.write(path + ": IOError\n")
+        except OSError:
+            # sys.stderr.write(path + ": OSError\n")
             return 0
         except ValueError:
             sys.stderr.write(path + ": ValueError\n")
@@ -556,8 +556,8 @@ class Cache(dict):
                 finally:
                     lock.release()
             return True
-        except IOError:
-            sys.stderr.write(path + ": IOError\n")
+        except OSError:
+            sys.stderr.write(path + ": OSError\n")
             return False
 
     def sync_status(self):
@@ -574,11 +574,11 @@ class Cache(dict):
             if not os.path.isdir(self.datpath + d):
                 try:
                     os.makedirs(self.datpath + d)
-                except (IOError, OSError):
-                    sys.stderr.write(self.datfile + ": IOError/OSError\n")
+                except OSError:
+                    sys.stderr.write(self.datfile + ": OSError\n")
 
     def check_data(self, res, stamp=None, id=None, begin=None, end=None):
-        '''Check a data and add it cache.'''
+        """Check a data and add it cache."""
         flag_got = False
         flag_spam = False
         count = 0
@@ -673,7 +673,7 @@ class Cache(dict):
             self.stamp = rec.stamp
 
     def check_body(self):
-        '''Remove body cache that is a field of removed record.'''
+        """Remove body cache that is a field of removed record."""
         try:
             dir = os.path.join(config.cache_dir, self.dathash, 'body')
             for idstr in os.listdir(dir):
@@ -683,8 +683,8 @@ class Cache(dict):
                         os.remove(os.path.join(dir, idstr))
                     except OSError as err:
                         sys.stderr.write("%s/%s: OSError: %s\n" % (dir, idstr, err))
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
 
     def check_attach(self):
         """Remove attach cache that is a field of removed record."""
@@ -703,8 +703,8 @@ class Cache(dict):
                         os.remove(dir + "/" + f)
                     except OSError as err:
                         sys.stderr.write('OSError: %s\n' % err)
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
 
     def remove(self):
         """Remove cache (a.k.a DATFILE).
@@ -714,13 +714,13 @@ class Cache(dict):
         try:
             shutil.rmtree(self.datpath)
             return True
-        except (IOError, OSError) as err:
-            sys.stderr.write('IOError/OSError: %s\n' % err)
+        except OSError as err:
+            sys.stderr.write('OSError: %s\n' % err)
             return False
 
     def remove_records(self, now, limit):
-        '''Remove records which are older than limit.
-        '''
+        """Remove records which are older than limit.
+        """
         # Remove old records.
         ids = list(self.keys())
         if self.save_size < len(ids):
@@ -804,7 +804,7 @@ class CacheList(list):
                 c = Cache(dat_stat, sugtagtable, recentlist)
                 self.append(c)
                 f.close()
-            except IOError:
+            except OSError:
                 c = Cache(i, sugtagtable, recentlist)
                 self.append(c)
 
@@ -830,7 +830,7 @@ class CacheList(list):
                 sys.stderr.write('rehash %s to %s\n' % (i, hash))
                 shutil.move(os.path.join(config.cache_dir, i), os.path.join(config.cache_dir, hash))
                 to_reload = True
-            except (IOError, OSError, IndexError) as err:
+            except (OSError, IndexError) as err:
                 sys.stderr.write('rehash error %s for %s\n' % (err, i))
         if to_reload:
             self.load()
@@ -885,7 +885,7 @@ class CacheList(list):
                         result.append(cache)
                         rec.free()
                         break
-                except (IOError, OSError, UnicodeDecodeError):
+                except (OSError, UnicodeDecodeError):
                     pass
                 rec.free()
         return result
@@ -916,8 +916,8 @@ class CacheList(list):
 
 
 class VirtualRecord(Record):
-    '''Record like object for UpdateList.
-    '''
+    """Record like object for UpdateList.
+    """
 
     def __str__(self):
         line = "<>".join((str(self.stamp), self.id, self.datfile))
@@ -987,10 +987,10 @@ class UpdateList:
 
 
 class RecentList(UpdateList):
-    '''Recent updated files list.
+    """Recent updated files list.
 
     Provide file names and tags for node manager.
-    '''
+    """
 
     def __init__(self):
         UpdateList.__init__(self, config.recent, config.recent_range)
@@ -1010,7 +1010,7 @@ class RecentList(UpdateList):
             tag_update = False
             try:
                 res = node.talk("/recent/%d-" % begin)
-            except (IOError, socket.error, socket.timeout) as strerror:
+            except (OSError, socket.timeout) as strerror:
                 sys.stderr.write('/recent %s: %s\n' % (node, strerror))
                 continue
             for line in res:
@@ -1036,7 +1036,7 @@ class RecentList(UpdateList):
         sugtagtable.sync()
 
     def uniq(self):
-        '''Save one line par one file.'''
+        """Save one line par one file."""
         date = {}
         for r in self[:]:
             if r.datfile not in date:
@@ -1048,7 +1048,7 @@ class RecentList(UpdateList):
                 self.remove(r)
 
     def sync(self):
-        '''Save list.'''
+        """Save list."""
         self.uniq()
         UpdateList.sync(self)
 

@@ -46,10 +46,10 @@ def md5digest(s):
 
 
 def fsdiff(f, s):
-    '''Diff between file and string.
+    """Diff between file and string.
 
     Return same data or not.
-    '''
+    """
     if isinstance(s, str):
         s = s.encode('utf-8', 'replace')
     try:
@@ -61,7 +61,7 @@ def fsdiff(f, s):
             return False
         else:
             return True
-    except (IOError, OSError) as e:
+    except OSError as e:
         sys.stderr.write('%s: %s\n' % (f, e))
         return False
 

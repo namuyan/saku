@@ -1,5 +1,5 @@
-'''Tied List and Dictionaly.
-'''
+"""Tied List and Dictionaly.
+"""
 #
 # Copyright (c) 2005-2014 shinGETsu Project.
 # All rights reserved.
@@ -51,16 +51,16 @@ def reset():
 
 
 class ListFile:
-    '''File includes list.
+    """File includes list.
 
     One element par one line.
-    '''
+    """
 
     def __init__(self, path, elemclass=None, caching=False):
-        '''Constructor.
+        """Constructor.
 
         None for path do not tie file.
-        '''
+        """
         self.data = []
         self.path = path
         self.elemclass = elemclass
@@ -80,7 +80,7 @@ class ListFile:
                             sys.stderr.write('ListFile: %s\n' % err)
                     else:
                         self.data.append(line.strip())
-        except (IOError, OSError) as err:
+        except OSError as err:
             sys.stderr.write('%s: %s\n' % (self.path, err))
         if caching and (self.path not in _cache) \
                    and os.path.isfile(self.path):
@@ -131,11 +131,11 @@ class ListFile:
 
 
 class DictFile:
-    '''File includes dictionary.
+    """File includes dictionary.
 
     data: sugtags[filename] = [1, 2, ...]
     file format: filename<>1 2 ...
-    '''
+    """
 
     def __init__(self, path, elemclass=None, caching=False, listclass=None):
         self.data = {}
@@ -162,7 +162,7 @@ class DictFile:
                                 self.data[key].append(line.strip())
                     except ValueError as err:
                         sys.stderr.write('%s: %s\n' % (self.path, err))
-        except (IOError, OSError) as err:
+        except OSError as err:
             sys.stderr.write('%s: %s\n' % (self.path, err))
 
     def __iter__(self):

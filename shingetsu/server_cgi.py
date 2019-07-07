@@ -72,7 +72,7 @@ class CGI(basecgi.CGI):
                 self.stdout.write("OK\n")
 
     def path_info(self):
-        '''Parse PATH_INFO.'''
+        """Parse PATH_INFO."""
         path = self.environ.get('PATH_INFO', '')
         if path.startswith('/'):
             path = path[1:]
@@ -92,8 +92,8 @@ class CGI(basecgi.CGI):
             for line in f:
                 self.stdout.write(line)
             f.close()
-        except IOError:
-            self.stderr.write(config.motd + ": IOError\n")
+        except OSError:
+            self.stderr.write(config.motd + ": OSError\n")
 
     def do_ping(self):
         self.header("text/plain")

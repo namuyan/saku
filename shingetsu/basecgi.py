@@ -1,5 +1,5 @@
-'''Base CGI module.
-'''
+"""Base CGI module.
+"""
 #
 # Copyright (c) 2005-2015 shinGETsu Project.
 # All rights reserved.
@@ -33,10 +33,10 @@ __all__ = ['CGI']
 
 
 class BodyFilter:
-    '''Filtered output stream.
+    """Filtered output stream.
 
     When HEAD method is used, output HTTP header only.
-    '''
+    """
     mode = 'wb'  # Writable stream
 
     def __init__(self, env, output):
@@ -49,8 +49,8 @@ class BodyFilter:
         if isinstance(msg, str):
             msg = msg.encode('utf-8', 'replace')
         if not self.ishead:
-            #XXX it does not work on python 3.2.3
-            #self.output.write(msg)
+            # XXX it does not work on python 3.2.3
+            # self.output.write(msg)
             bufsize = 1024
             for offset in range(0, len(msg), bufsize):
                 self.output.write(msg[offset:offset + bufsize])
@@ -100,7 +100,7 @@ class CGI:
         import socket
         try:
             self.run()
-        except (IOError, socket.error, socket.timeout) as strerror:
+        except (OSError, socket.timeout) as strerror:
             self.stderr.write("%s: %s\n" % (self.environ['REMOTE_ADDR'], strerror))
 
     def run(self):

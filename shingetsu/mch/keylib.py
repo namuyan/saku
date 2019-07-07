@@ -28,7 +28,7 @@ class _DatkeyTable:
                         continue
                     self.set_entry(stamp, filekey)
 
-        except IOError:
+        except OSError:
             pass
 
     def save(self):
@@ -37,7 +37,7 @@ class _DatkeyTable:
                 for stamp, filekey in self.datkey2filekey.items():
                     f.write(str(stamp) + '<>' + filekey + '\n')
 
-        except IOError:
+        except OSError:
             utils.log('keylib._DatkeyTable.save fails')
 
     def set_entry(self, stamp, filekey):

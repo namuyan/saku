@@ -1,5 +1,5 @@
-'''Spam Rules List.
-'''
+"""Spam Rules List.
+"""
 #
 # Copyright (c) 2006,2014 shinGETsu Project.
 # All rights reserved.

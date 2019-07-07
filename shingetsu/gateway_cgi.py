@@ -28,6 +28,7 @@
 
 import re
 import cgi
+import html
 import csv
 from operator import attrgetter
 from time import strftime, time
@@ -51,10 +52,10 @@ class CGI(gateway.CGI):
             tag = self.form.getfirst('tag', '')
             if filter:
                 self.filter = filter.lower()
-                self.str_filter = cgi.escape(filter, True)
+                self.str_filter = html.escape(filter, True)
             elif tag:
                 self.tag = tag.lower()
-                self.str_tag = cgi.escape(tag, True)
+                self.str_tag = html.escape(tag, True)
         except (re.error, UnicodeDecodeError):
             self.header(self.message['regexp_error'], deny_robot=True)
             self.footer()
@@ -311,7 +312,7 @@ class CGI(gateway.CGI):
                     if attach:
                         suffix = r.get('suffix', '')
                         if not re.search(r'^[0-9A-Za-z]+$', suffix):
-                            suffix = txt
+                            suffix = 'txt'
                         content += '\n    <p>' + \
                             '<a href="http://%s%s%s%s/%s/%d.%s">%d.%s</a></p>'\
                             % (self.host, self.appli[cache.type], self.sep,
@@ -359,7 +360,7 @@ class CGI(gateway.CGI):
                 date=cache.recent_stamp,
                 title=title,
                 subject=tags,
-                content=cgi.escape(title))
+                content=html.escape(title))
 
         self.stdout.write('Content-Type: text/xml; charset=UTF-8\n')
         try:
@@ -379,8 +380,8 @@ class CGI(gateway.CGI):
         self.stdout.write("Content-Type: text/plain; charset=UTF-8\n\n")
         try:
             self.stdout.write(opentext(config.motd).read())
-        except IOError:
-            self.stderr.write(config.motd + ": IOError\n")
+        except OSError:
+            self.stderr.write(config.motd + ": OSError\n")
 
 
 # End of CGI

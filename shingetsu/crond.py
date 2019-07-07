@@ -1,5 +1,5 @@
-'''Cron daemon running in another thread for client.cgi.
-'''
+"""Cron daemon running in another thread for client.cgi.
+"""
 #
 # Copyright (c) 2005-2015 shinGETsu Project.
 # All rights reserved.
@@ -32,7 +32,6 @@ import re
 import sys
 import time
 from threading import Thread
-from urllib.request import urlopen
 
 from . import config
 from . import tiedobj
@@ -104,8 +103,8 @@ class Status(dict):
                 for k in ("ping", "init", "sync"):
                     self[k] = int(f.readline())
                 f.close()
-        except IOError:
-            sys.stderr.write(self.statusfile + ": IOError\n")
+        except OSError:
+            sys.stderr.write(self.statusfile + ": OSError\n")
         except ValueError:
             sys.stderr.write("Wrong format\n")
 
@@ -115,8 +114,8 @@ class Status(dict):
             for k in ("ping", "init", "sync"):
                 f.write(str(self[k]) + '\n')
             f.close()
-        except IOError:
-            sys.stderr.write(self.statusfile + ": IOError\n")
+        except OSError:
+            sys.stderr.write(self.statusfile + ": OSError\n")
 
     def check(self, key):
         """Task is done."""

@@ -27,7 +27,7 @@
 #
 
 import re
-import cgi
+import html
 
 from .template import Template
 
@@ -71,7 +71,7 @@ class RSS(dict):
 
     def __init__(self, encode="utf-8", lang="en", title="", parent="", link="", uri="", description="", xsl=""):
         """Constructor."""
-
+        dict.__init__(self)
         self.encode = encode
         self.lang = lang
         self.title = title
@@ -119,8 +119,8 @@ class RSS(dict):
 
 
 def make_rss1(rss):
-    '''Generate RSS 1.0.
-    '''
+    """Generate RSS 1.0.
+    """
 
     def w3cdate(date):
         from time import strftime, gmtime
@@ -130,6 +130,6 @@ def make_rss1(rss):
         'rss': rss,
         'feed': [rss[uri] for uri in rss],
         'w3cdate': w3cdate,
-        'escape': cgi.escape,
+        'escape': html.escape,
     }
     return Template().display('rss1', var)

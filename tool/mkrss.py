@@ -76,7 +76,7 @@ def check_date(date, filename):
     rssdate = os.path.join(docroot, filename)
     try:
         olddate = opentext(rssdate).read().strip()
-    except IOError:
+    except OSError:
         olddate = ""
     if date and date == olddate:
         sys.exit()

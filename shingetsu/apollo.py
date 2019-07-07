@@ -1,5 +1,5 @@
-'''Signature Module.
-'''
+"""Signature Module.
+"""
 #
 # Copyright (c) 2005-2014 shinGETsu Project.
 # All rights reserved.
