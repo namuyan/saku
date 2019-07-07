@@ -103,7 +103,7 @@ enable2ch = _get_value(_extconf, 'Gateway', 'enable_2ch', False, 'boolean')
 re_admin = re.compile(admin)
 re_friend = re.compile(friend)
 re_visitor = re.compile(visitor)
-template_suffix = '.txt'
+template_suffix = '.html'
 
 # Seconds; 0 for infinity
 save_record = {}

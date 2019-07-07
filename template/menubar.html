@@ -2,21 +2,21 @@
  # Copyright (c) 2005-2015 shinGETsu Project.
  #}
 {% if id %}
-  <aside class="navbar-collapse" id="{{id}}">
+  <aside class="navbar-collapse" id="{{ id }}">
 {% else %}
   <aside class="navbar-collapse">
 {% endif %}
 <ul class="nav nav-pills navbar-nav">
-  <li><a href="{{gateway_cgi}}">{{message.top}}</a></li>
+  <li><a href="{{ gateway_cgi }}">{{ message.top }}</a></li>
   {% for i in ('changes', 'index') %}
-    <li>{{gateway_link(gateway_cgi, i)}}</li>
+    <li>{{ gateway_link(gateway_cgi, i) }}</li>
   {% endfor %}
   {% if isfriend or isadmin %}
     {% for i in ('recent', 'new') %}
-      <li>{{gateway_link(gateway_cgi, i)}}</li>
+      <li>{{ gateway_link(gateway_cgi, i) }}</li>
     {% endfor %}
   {% endif %}
-  <li><a href="{{rss}}">{{message.rss}}</a></li>
+  <li><a href="{{ rss }}">{{ message.rss }}</a></li>
 </ul>
 
 </aside>

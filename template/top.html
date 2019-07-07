@@ -1,0 +1,55 @@
+{# Saku Gateway Toppage.
+ # Copyright (c) 2005-2015 shinGETsu Project.
+ #}
+<ul class="topmenu">
+  {% for i in ('changes', 'index') %}
+    <li>{{ gateway_link(gateway_cgi, i) }}</li>
+  {% endfor %}
+  {% if isfriend or isadmin %}
+    {% for i in ('recent', 'new') %}
+      <li>{{ gateway_link(gateway_cgi, i) }}</li>
+    {% endfor %}
+  {% endif %}
+  {% if isadmin %}
+    {% for i in ('search', 'status') %}
+      <li>{{ gateway_link(admin_cgi, i) }}</li>
+    {% endfor %}
+  {% endif %}
+  <li><a href="http://www.shingetsu.info/">{{ message.site }}</a></li>
+  <li><a href="{{ gateway_cgi }}/motd">{{ message.agreement }}</a></li>
+  {% if mch_url %}
+    <li><a href="{{ mch_url }}">{{ message.mch }}</a></li>
+  {% endif %}
+  <li><a href="{{ gateway_cgi }}/rss">{{ message.rss }}</a></li>
+</ul>
+
+<h2>{{ message.recent_changes }}</h2>
+<ul id="top_index">
+  {% for cache in cachelist %}
+    {% if cache.type in types %}
+      {{ make_list_item(cache, remove=False, target=target) }}
+    {% endif %}
+  {% endfor %}
+</ul>
+{% if (not cachelist) and (isfriend or isadmin) %}
+  <p>{{ message.empty_list % (gateway_link(gateway_cgi, 'recent')) }}</p>
+{% endif %}
+
+{% if taglist %}
+  <h2>{{ message.tag }}</h2>
+  <ul class="topmenu">
+    {% for t in taglist %}
+      <li><a href="{{ gateway_cgi }}/{{ target }}?tag={{ str_encode(t) }}">{{ t }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% if mch_url %}
+  <h2>{{ message.mch_categories }}</h2>
+  <ul class="topmenu">
+    <li><a href="{{ mch_url }}">{{ message.all }}</a></li>
+    {% for category in mch_categories %}
+      <li><a href="{{ category.url }}">{{ category.text }}</a></li>
+    {% endfor %}
+  </ul>
+{% endif %}
